@@ -1,0 +1,846 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us - Dramatique{% endblock %}
+
+{% block body %}
+<style>
+    .content-wrapper {
+        padding: 0 !important;
+        background: #eef2ff;
+    }
+
+    .landing-page {
+        min-height: 100vh;
+        background: linear-gradient(180deg, #e8eeff 0%, #f1e8ff 58%, #fff3e6 100%);
+    }
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 1rem 0;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #8B5CF6;
+        letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #374151;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+        color: #8B5CF6;
+    }
+
+    .nav-links .nav-cta {
+        background: #8B5CF6;
+        color: #ffffff;
+        padding: 0.6rem 1rem;
+        border-radius: 9999px;
+    }
+
+    .nav-links .nav-cta:hover {
+        background: #7C3AED;
+        color: #ffffff;
+    }
+
+    .nav-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        border: 1px solid #d1d5db;
+        background: #ffffff;
+        border-radius: 0.7rem;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        padding: 0;
+    }
+
+    .nav-toggle span {
+        width: 18px;
+        height: 2px;
+        background: #374151;
+        border-radius: 9999px;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .about-section {
+        padding: 10rem 2rem 5rem;
+        background: transparent;
+    }
+
+    .about-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .about-hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 2.5rem;
+        align-items: center;
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+        color: #111827;
+        margin-bottom: 1rem;
+        line-height: 1.05;
+    }
+
+    .about-hero p {
+        color: #4B5563;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .highlight-pill {
+        display: block;
+        color: #6D28D9;
+        padding: 0;
+        font-size: 3rem;
+        font-weight: 700;
+        border-radius: 0;
+        width: 100%;
+        text-align: center;
+        margin: 0 auto 1.25rem;
+    }
+
+    .about-values {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .about-value-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+    }
+
+    .about-value-card strong {
+        display: block;
+        font-size: 0.95rem;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .about-value-card span {
+        color: #475569;
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
+    .about-hero-visual {
+        min-height: 380px;
+        background: linear-gradient(180deg, rgba(102, 51, 153, 0.15), rgba(249, 250, 251, 0.95));
+        border-radius: 1.5rem;
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.08);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-hero-visual::before {
+        content: '';
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: rgba(109, 40, 217, 0.12);
+        top: -40px;
+        right: -40px;
+    }
+
+    .about-hero-visual::after {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: rgba(79, 70, 229, 0.1);
+        bottom: -50px;
+        left: -30px;
+    }
+
+    .about-hero-visual h2 {
+        font-size: 1.5rem;
+        color: #1F2937;
+        margin-bottom: 1rem;
+    }
+
+    .about-hero-visual p {
+        color: #4B5563;
+        line-height: 1.8;
+    }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .about-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+    }
+
+    .about-card h3 {
+        font-size: 1.35rem;
+        color: #111827;
+        margin-bottom: 0.75rem;
+    }
+
+    .about-card p {
+        color: #4B5563;
+        line-height: 1.85;
+    }
+
+    .section-heading {
+        font-size: 2rem;
+        color: #111827;
+        margin-bottom: 1rem;
+    }
+
+    .section-text {
+        color: #4B5563;
+        line-height: 1.8;
+        margin-bottom: 2rem;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .feature-card {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 1.75rem;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+        text-align: center;
+    }
+
+    .feature-card h4 {
+        font-size: 1.05rem;
+        color: #111827;
+        margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+        color: #6B7280;
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
+    .about-team {
+        margin-top: 4rem;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .team-card {
+        background: #ffffff;
+        border-radius: 1.25rem;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+        text-align: center;
+    }
+
+    .team-avatar {
+        width: 108px;
+        height: 108px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #EDE9FE;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .team-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        display: block;
+    }
+
+    .team-card h4 {
+        font-size: 1.15rem;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .team-card span {
+        display: block;
+        color: #6B7280;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .team-card p {
+        color: #4B5563;
+        line-height: 1.75;
+        font-size: 0.95rem;
+    }
+
+    .footer {
+        background: #1F2937;
+        color: white;
+        padding: 3rem 0 1rem;
+    }
+
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .footer-section ul {
+        list-style: none;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-section a {
+        color: #9CA3AF;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+        color: white;
+    }
+
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .contact-item i {
+        width: 20px;
+        height: 20px;
+        background: #8B5CF6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-link {
+        color: #9CA3AF;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .social-link:hover {
+        color: white;
+    }
+
+    .simple-footer {
+        background: #111827;
+        width: 100%;
+        margin-bottom: -32px;
+    }
+
+    .footer-bottom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .footer-bottom p {
+        margin: 0;
+        color: #9CA3AF;
+        font-size: 0.95rem;
+    }
+
+    .footer-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-links a {
+        color: #8B5CF6;
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+        color: #A78BFA;
+    }
+
+    @media (max-width: 1024px) {
+        .nav-container {
+            padding: 0 1.25rem;
+        }
+
+        .nav-links {
+            gap: 1.25rem;
+        }
+
+        .about-hero {
+            gap: 2rem;
+        }
+
+        .about-hero h1 {
+            font-size: 2.6rem;
+        }
+
+        .highlight-pill {
+            font-size: 2.6rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 0.75rem 0;
+        }
+
+        .nav-container {
+            padding: 0 0.9rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+        }
+
+        .nav-toggle {
+            display: inline-flex;
+        }
+
+        .nav-links {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            gap: 0.25rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.9rem;
+            padding: 0.35rem;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+        }
+
+        .nav-links.is-open {
+            display: flex;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 0.6rem;
+        }
+
+        .nav-links a:hover {
+            background: #f5f3ff;
+        }
+
+        .nav-links .nav-cta {
+            display: inline-flex;
+            padding: 0.5rem 0.95rem;
+            margin: 0.25rem 0.4rem 0.2rem;
+        }
+
+        .about-section {
+            padding: 7.6rem 1rem 3.2rem;
+        }
+
+        .about-container {
+            max-width: 100%;
+        }
+
+        .highlight-pill {
+            font-size: clamp(1.95rem, 9vw, 2.55rem);
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .about-hero {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(1.95rem, 9vw, 2.55rem);
+        }
+
+        .about-hero p {
+            font-size: 1rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .about-values {
+            grid-template-columns: 1fr;
+            gap: 0.9rem;
+        }
+
+        .about-value-card,
+        .about-card,
+        .feature-card,
+        .team-card {
+            padding: 1.35rem;
+        }
+
+        .about-hero-visual {
+            min-height: 280px;
+            padding: 1.4rem;
+        }
+
+        .team-grid,
+        .about-grid,
+        .feature-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .section-heading {
+            font-size: 1.75rem;
+        }
+
+        .section-text {
+            font-size: 1rem;
+        }
+
+        .footer-container {
+            grid-template-columns: 1fr;
+            padding: 0 1rem;
+            text-align: left;
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            padding: 1rem;
+        }
+
+        .footer-links {
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-container {
+            padding: 0 0.75rem;
+        }
+
+        .about-section {
+            padding: 7.3rem 0.75rem 2.8rem;
+        }
+
+        .highlight-pill {
+            font-size: clamp(1.7rem, 10vw, 2.15rem);
+            padding: 0;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(1.7rem, 10vw, 2.15rem);
+        }
+
+        .footer-container,
+        .footer-bottom {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+    }
+</style>
+
+<div class="landing-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">DRAMATIQUE</div>
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="about-nav" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul id="about-nav" class="nav-links">
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_collection') }}">Collections</a></li>
+                <li><a href="{{ path('app_about') }}">About Us</a></li>
+                <li><a href="{{ path('app_contact') }}">Contact Us</a></li>
+                <li><a href="{{ path('app_login') }}" class="nav-cta">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="about-section">
+        <div class="about-container">
+        <span class="highlight-pill">Our Story</span>
+        <div class="about-hero">
+            <div>
+                <h1>We make every costume rental feel effortless, dramatic, and stage-ready.</h1>
+                <p>At Dramatique, we help productions, events, and creative teams find premium costumes, expert fittings, and fast support so every performance can shine.</p>
+
+                <div class="about-values">
+                    <div class="about-value-card">
+                        <strong>Curated Collections</strong>
+                        <span>Carefully selected costumes across eras, genres, and characters so you can build a complete wardrobe with confidence.</span>
+                    </div>
+                    <div class="about-value-card">
+                        <strong>Personalized Service</strong>
+                        <span>One-on-one styling advice, fit guidance, and rental coordination designed around your production’s schedule.</span>
+                    </div>
+                    <div class="about-value-card">
+                        <strong>Stage-Ready Quality</strong>
+                        <span>Premium fabrics, expert tailoring, and reliable delivery help you look perfect on opening night.</span>
+                    </div>
+                    <div class="about-value-card">
+                        <strong>Flexible Rentals</strong>
+                        <span>Short-term and long-term rental options make wardrobe support easy for rehearsals, shows, and special events.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="about-hero-visual">
+                <div>
+                    <h2>Designed for performance teams and creative storytellers</h2>
+                    <p>Whether you are staging a play, hosting an event, or styling a photo shoot, our team delivers costumes that feel inspired, comfortable, and ready for the spotlight.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 4rem;">
+            <h2 class="section-heading">What makes Dramatique different</h2>
+            <p class="section-text">We combine theatrical expertise, wardrobe craftsmanship, and a customer-first approach to offer a costume rental experience built around your creative vision.</p>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3>Our mission</h3>
+                    <p>Deliver beautifully designed costume rentals with personalized support, dependable service, and thoughtful details for every production.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Our vision</h3>
+                    <p>Become the most trusted costume partner for artists, directors, and event planners who want quality, ease, and unforgettable storytelling.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Our promise</h3>
+                    <p>Responsive communication, accurate fittings, and seamless rentals so your team can focus on rehearsal, direction, and performance.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Why choose us</h3>
+                    <p>Flexible rental terms, carefully curated inventory, and a supportive wardrobe team that helps every production look its best.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="about-team">
+            <h2 class="section-heading">Meet our team</h2>
+            <p class="section-text">Our experienced costume stylists, fit specialists, and support staff bring your stories to life with care, creativity, and precision.</p>
+
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="{{ asset('Landing Page/Owner.jpg') }}" alt="Darl Dimagnaong">
+                    </div>
+                    <h4>Darl Dimagnaong</h4>
+                    <span>Owner</span>
+                    <p>Founder of Dramatique, guiding the company with a passion for costume artistry, theatrical storytelling, and unmatched customer care.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="{{ asset('Landing Page/Ariel.jpg') }}" alt="Ariel Martinez">
+                    </div>
+                    <h4>Ariel Martinez</h4>
+                    <span>Costume Director</span>
+                    <p>Leads wardrobe curation and styling for every production with a focus on authenticity and stage-ready quality.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="{{ asset('Landing Page/Nora.jpg') }}" alt="Nora Lee">
+                    </div>
+                    <h4>Nora Lee</h4>
+                    <span>Operations Manager</span>
+                    <p>Oversees daily operations, streamlines processes, and ensures every rental and production runs smoothly from wardrobe prep to delivery.</p>
+                </div>
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <img src="{{ asset('Landing Page/Talia.jpg') }}" alt="Talia Jones">
+                    </div>
+                    <h4>Talia Jones</h4>
+                    <span>Sales & Customer Service</span>
+                    <p>Coordinates rentals, answers questions, and keeps each production on schedule with responsive support.</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 4rem;">
+            <h2 class="section-heading">Built around real creative needs</h2>
+            <p class="section-text">From opening night to the final bow, we support every production with costumes that are both beautiful and practical. Our process is designed to reduce stress, increase confidence, and deliver a memorable experience.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Fast support</h4>
+                    <p>Quick responses and helpful guidance keep your wardrobe plans moving forward without delays.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Attention to detail</h4>
+                    <p>Every costume is checked for fit, quality, and condition before it reaches your production.</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Creative partnership</h4>
+                    <p>We work as an extension of your team, helping translate creative direction into wardrobe reality.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <footer class="simple-footer">
+        <div class="footer-bottom">
+            <p>© 2026 Dramatique. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleButton = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('#about-nav');
+
+    if (!toggleButton || !navLinks) {
+        return;
+    }
+
+    toggleButton.addEventListener('click', function () {
+        const isOpen = navLinks.classList.toggle('is-open');
+        toggleButton.classList.toggle('is-open', isOpen);
+        toggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    navLinks.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                navLinks.classList.remove('is-open');
+                toggleButton.classList.remove('is-open');
+                toggleButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    document.addEventListener('click', function (event) {
+        if (window.innerWidth > 768) {
+            return;
+        }
+
+        const clickedInsideMenu = navLinks.contains(event.target) || toggleButton.contains(event.target);
+        if (!clickedInsideMenu) {
+            navLinks.classList.remove('is-open');
+            toggleButton.classList.remove('is-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+            navLinks.classList.remove('is-open');
+            toggleButton.classList.remove('is-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+});
+</script>
+{% endblock %}

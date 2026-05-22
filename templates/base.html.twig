@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DRAMATIQUE{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #662d91;
+            --primary-dark: #4a1f6b;
+            --primary-light: #8b4bc4;
+            --secondary-color: #000000;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --border-color: #e0e0e0;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 70px !important;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-white);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .sidebar-toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            border: 1px solid var(--primary-dark);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-toggle-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-toggle-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .sidebar.collapsed .sidebar-toggle-btn {
+            right: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        .sidebar.collapsed .sidebar-toggle-btn:hover {
+            transform: translate(50%, -50%) scale(1.1);
+        }
+
+        .sidebar-brand {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-brand {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-logo {
+            max-width: 150px;
+            height: auto;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-logo {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-nav {
+            padding: 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-section-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            padding: 0 20px;
+            margin-bottom: 8px;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-section-title {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 400;
+            transition: all 0.2s ease;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(102, 45, 145, 0.08);
+            color: var(--primary-color);
+        }
+
+        .nav-link.active {
+            background-color: rgba(102, 45, 145, 0.12);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar.collapsed .nav-icon {
+            margin-right: 0;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+        }
+
+        body.sidebar-collapsed .main-content {
+            margin-left: 70px;
+        }
+
+        .topbar {
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(102, 45, 145, 0.3);
+        }
+
+        .user-avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar-placeholder:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(102, 45, 145, 0.3);
+        }
+
+        .user-info {
+            text-align: right;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .user-info:hover {
+            opacity: 0.8;
+        }
+
+        .user-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* Profile Dropdown Styles */
+        .profile-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-dropdown-trigger {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+
+        .profile-dropdown-trigger:hover {
+            background-color: rgba(102, 45, 145, 0.05);
+        }
+
+        .profile-dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .profile-dropdown.active .profile-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+        }
+
+        .profile-dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-dropdown-item:hover {
+            background-color: rgba(102, 45, 145, 0.05);
+        }
+
+        .profile-dropdown-item.logout {
+            color: #f44336;
+        }
+
+        .profile-dropdown-item.logout:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+        }
+
+        .profile-dropdown-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+        }
+
+        /* Login/Register Page Styles */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(180deg, rgba(235,228,253,0.95) 0%, rgba(249,245,255,0.95) 100%);
+        }
+
+        /* Responsive - Keep sidebar and navbar visible on mobile */
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 200px;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                width: var(--sidebar-width);
+                position: fixed;
+                z-index: 1000;
+            }
+
+            .sidebar.collapsed {
+                width: 70px;
+            }
+
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+
+            body.sidebar-collapsed .main-content {
+                margin-left: 70px;
+            }
+
+            .sidebar-logo {
+                max-width: 120px;
+            }
+
+            .nav-link {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .nav-icon {
+                font-size: 14px;
+                width: 18px;
+                margin-right: 8px;
+            }
+
+            .topbar {
+                padding: 12px 16px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .topbar-title {
+                font-size: 16px;
+            }
+
+            .content-wrapper {
+                padding: 16px;
+            }
+        }
+
+        /* Extra small devices - make sidebar even more compact */
+        @media (max-width: 480px) {
+            :root {
+                --sidebar-width: 180px;
+            }
+
+            .sidebar.collapsed {
+                width: 60px;
+            }
+
+            body.sidebar-collapsed .main-content {
+                margin-left: 60px;
+            }
+
+            .sidebar-logo {
+                max-width: 100px;
+            }
+
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .nav-icon {
+                font-size: 13px;
+                width: 16px;
+                margin-right: 6px;
+            }
+
+            .topbar {
+                padding: 10px 12px;
+            }
+
+            .topbar-title {
+                font-size: 14px;
+            }
+        }
+
+        /* Shared UI styles: clean, readable tables and controls */
+        .table-container {
+            width: 100%;
+            margin: 16px 0 24px;
+            overflow: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border-radius: 8px;
+            background: var(--bg-white);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px;
+        }
+
+        .table thead th {
+            padding: 14px 18px;
+            background: #fafafa;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            letter-spacing: 0.4px;
+        }
+
+        .table tbody td {
+            padding: 14px 18px;
+            vertical-align: middle;
+            font-size: 14px;
+            color: var(--text-dark);
+            border-bottom: 1px solid rgba(224,224,224,0.6);
+        }
+
+        .table tbody tr:hover td {
+            background: rgba(102,45,145,0.03);
+        }
+
+        .table tbody tr:nth-child(even) td {
+            background: #ffffff;
+        }
+
+        .table tbody tr:nth-child(odd) td {
+            background: #fbfbfb;
+        }
+
+        .table .muted { color: var(--text-light); font-size: 13px; }
+
+        .text-right { text-align: right; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 12px;
+            min-width: 110px;
+            height: 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: transform 0.08s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+        }
+
+        .btn:active { transform: translateY(1px); }
+
+        .btn-primary { background: var(--primary-color); color: white; border-color: var(--primary-dark); }
+        .btn-primary:hover { background: var(--primary-dark); }
+
+        .btn-secondary { background: #ffffff; color: var(--text-dark); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: #f6f6f6; }
+
+        .btn-danger { background: #ff4d4f; color: white; border-color: #d9363e; }
+        .btn-danger:hover { background: #e33a3c; }
+
+        /* Action links styled as compact buttons to match sizes */
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            min-width: 96px;
+            height: 36px;
+            border-radius: 6px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            border: 1px solid transparent;
+            background: transparent;
+        }
+
+        .action-link:hover { background: rgba(102,45,145,0.04); }
+
+        .action-link i { margin-right: 6px; }
+
+        /* Small icon-only helpers */
+        .icon-only { display: inline-flex; align-items: center; justify-content: center; padding: 6px; border-radius: 6px; }
+
+        /* Responsive: make tables scroll on small screens */
+        @media (max-width: 800px) {
+            .table { min-width: 540px; }
+            .table thead th, .table tbody td { padding: 10px 12px; }
+        }
+
+        {% block stylesheets %}{% endblock %}
+    </style>
+</head>
+<body>
+    {% if app.user %}
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="{{ path('app_dashboard') }}" class="sidebar-brand">
+                    <img src="{{ asset('LOGOS/4.png') }}" alt="4" class="sidebar-logo">
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item">
+                        <a href="{{ path('app_dashboard') }}" class="nav-link {{ app.request.get('_route') == 'app_dashboard' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+                    <li class="nav-item">
+                        <a href="{{ path('app_products_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_products' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-box"></i>
+                            <span>Products</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_customer_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_customer' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users"></i>
+                            <span>Customers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_orders_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_orders' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-shopping-cart"></i>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_rental_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_rental' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-tag"></i>
+                            <span>Rental</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_stock_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_stock' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-warehouse"></i>
+                            <span>Stock</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {# Admin-only links #}
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <li class="nav-item">
+                        <a href="{{ path('app_user_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <span>User Management</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('app_activity_logs_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_activity_logs' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <span>Activity Logs</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="topbar">
+                <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="topbar-user">
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <div class="profile-dropdown-trigger">
+                            <div class="user-avatar-container">
+                                {# {% if app.user.avatar %}
+                                    <img src="{{ app.user.avatar }}" alt="{{ app.user.username }}" class="user-avatar">
+                                {% else %}
+                                    <div class="user-avatar-placeholder">
+                                        {{ app.user.username|first|upper }}
+                                    </div>
+                                {% endif %} #}
+                            </div>
+                            <div class="user-info">
+                                <div class="user-role">
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        Administrator
+                                    {% elseif is_granted('ROLE_STAFF') %}
+                                        Staff Member
+                                    {% else %}
+                                        User
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down" style="font-size: 12px; color: var(--text-light);"></i>
+                        </div>
+                        <div class="profile-dropdown-menu">
+                            <a href="{{ path('app_profile') }}" class="profile-dropdown-item">
+                                <i class="fas fa-user"></i>
+                                <span>View Profile</span>
+                            </a>
+                            <a href="{{ path('app_profile_edit') }}" class="profile-dropdown-item">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit Profile</span>
+                            </a>
+                            <a href="{{ path('app_logout') }}" class="profile-dropdown-item logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}" style="padding: 12px 16px; margin-bottom: 16px; border-radius: 8px; background-color: {% if label == 'success' %}#d4edda{% elseif label == 'error' %}#f8d7da{% else %}#d1ecf1{% endif %}; color: {% if label == 'success' %}#155724{% elseif label == 'error' %}#721c24{% else %}#0c5460{% endif %}; border: 1px solid {% if label == 'success' %}#c3e6cb{% elseif label == 'error' %}#f5c6cb{% else %}#bee5eb{% endif %};">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% elseif app.request.get('_route') in ['app_home', 'app_about', 'app_contact', 'app_collection'] %}
+        <div class="content-wrapper" style="padding: 32px;">
+            {{ block('body') }}
+        </div>
+    {% else %}
+        <div class="auth-container">
+            {% block auth_body %}{% endblock %}
+        </div>
+    {% endif %}
+
+    {% block javascripts %}{% endblock %}
+    <script>
+        // Profile Dropdown Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const trigger = profileDropdown ? profileDropdown.querySelector('.profile-dropdown-trigger') : null;
+
+            if (profileDropdown && trigger) {
+                trigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    profileDropdown.classList.toggle('active');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!profileDropdown.contains(e.target)) {
+                        profileDropdown.classList.remove('active');
+                    }
+                });
+            }
+
+            // Sidebar Toggle
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const body = document.body;
+            
+            if (sidebar && sidebarToggle && toggleIcon) {
+                // Check localStorage for saved state
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    body.classList.add('sidebar-collapsed');
+                    if (toggleIcon) {
+                        toggleIcon.classList.remove('fa-chevron-left');
+                        toggleIcon.classList.add('fa-chevron-right');
+                    }
+                }
+
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const wasCollapsed = sidebar.classList.contains('collapsed');
+                    sidebar.classList.toggle('collapsed');
+                    body.classList.toggle('sidebar-collapsed');
+                    
+                    // Update icon
+                    if (sidebar.classList.contains('collapsed')) {
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-chevron-left');
+                            toggleIcon.classList.add('fa-chevron-right');
+                        }
+                        localStorage.setItem('sidebarCollapsed', 'true');
+                    } else {
+                        if (toggleIcon) {
+                            toggleIcon.classList.remove('fa-chevron-right');
+                            toggleIcon.classList.add('fa-chevron-left');
+                        }
+                        localStorage.setItem('sidebarCollapsed', 'false');
+                    }
+                });
+            } else {
+                console.error('Sidebar toggle elements not found:', {
+                    sidebar: !!sidebar,
+                    sidebarToggle: !!sidebarToggle,
+                    toggleIcon: !!toggleIcon
+                });
+            }
+        });
+    </script>
+</body>
+</html>

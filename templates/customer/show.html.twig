@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block body %}
+    <h1>Customer</h1>
+
+    <div class="table-container">
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ customer.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ customer.name }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ customer.email }}</td>
+            </tr>
+            <tr>
+                <th>PhoneNumber</th>
+                <td>{{ customer.phoneNumber }}</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <a href="{{ path('app_customer_index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to list</a>
+
+    {% set isOwner = customer.getCreatedBy() and app.user and customer.getCreatedBy().getId() == app.user.getId() %}
+    {% set createdByAdmin = customer.getCreatedBy() and 'ROLE_ADMIN' in customer.getCreatedBy().getRoles() %}
+    {% if is_granted('ROLE_ADMIN') or isOwner or (is_granted('ROLE_STAFF') and createdByAdmin) %}
+        <a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-secondary"><i class="fas fa-edit"></i> Edit</a>
+
+        {{ include('customer/_delete_form.html.twig') }}
+    {% endif %}
+{% endblock %}

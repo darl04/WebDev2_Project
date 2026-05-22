@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-}
+      MYSQL_USER: ${MYSQL_USER:-darllexie}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secure_password}
+    ports:
+      - "3312:3306"  
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - dimagnaong_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: ${PMA_HOST:-mysql}
+      PMA_USER: ${PMA_USER:-root}
+      PMA_PASSWORD: ${PMA_PASSWORD:-root_password}
+    ports: 
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks: 
+      - dimagnaong_network
+
+volumes:
+  mysql_data:
+
+networks:
+  dimagnaong_network:

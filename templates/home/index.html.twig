@@ -1,0 +1,1072 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dramatique{% endblock %}
+
+{% block body %}
+<div class="landing-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">DRAMATIQUE</div>
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="primary-nav" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul id="primary-nav" class="nav-links">
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_collection') }}">Collections</a></li>
+                <li><a href="{{ path('app_about') }}">About Us</a></li>
+                <li><a href="{{ path('app_contact') }}">Contact Us</a></li>
+                <li><a href="{{ path('app_login') }}" class="nav-cta">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <h1>Where every customer can step into character with confidence and style</h1>
+            <p>To inspire creativity and self-expression by providing high-quality, imaginative costumes that bring every story to life.</p>
+            <div class="hero-buttons">
+                <a href="{{ path('app_collection') }}" class="btn btn-primary">Explore collections</a>
+                <a href="{{ path('app_about') }}" class="btn btn-secondary">Learn our story</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Collections -->
+    <section id="collections" class="collections">
+        <div class="section-container">
+            <h2>Featured collections</h2>
+            <p>Discover our curated selection of premium costumes for every occasion</p>
+            <div class="collections-grid">
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="{{ asset('Landing Page/Onesie  Collection.png') }}" alt="Onesie Collection">
+                    </div>
+                    <div class="collection-content">
+                        <span class="collection-category">Onesies</span>
+                        {# <h3>Onesie</h3> #}
+                        <p>Cozy character-themed outfits for all ages</p>
+                        <a href="{{ path('app_collection') }}#onesies-collection" class="collection-link">Explore collection</a>
+                    </div>
+                </div>
+
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="{{ asset('Landing Page/Inflatables.png') }}" alt="Inflatables Collection">
+                    </div>
+                    <div class="collection-content">
+                        <span class="collection-category">Inflatables</span>
+                        {# <h3>Fantasy realms</h3> #}
+                        <p>Mythical creatures, magical beings, and otherworldly characters</p>
+                        <a href="{{ path('app_collection') }}" class="collection-link">Explore collection</a>
+                    </div>
+                </div>
+
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="{{ asset('Landing Page/Mascots.png') }}" alt="Mascots Collection">
+                    </div>
+                    <div class="collection-content">
+                        <span class="collection-category">Mascots</span>
+                        {# <h3>Mascots</h3> #}
+                        <p>Contemporary stage productions and character interpretations</p>
+                        <a href="{{ path('app_collection') }}" class="collection-link">Explore collection</a>
+                    </div>
+                </div>
+
+                <div class="collection-card">
+                    <div class="collection-image">
+                        <img src="{{ asset('Landing Page/Seasonal.png') }}" alt="Seasonal celebrations">
+                    </div>
+                    <div class="collection-content">
+                        <span class="collection-category">SEASONAL</span>
+                        {# <h3>Seasonal celebrations</h3> #}
+                        <p>Holiday themes and festive occasions throughout the year</p>
+                        <a href="{{ path('app_collection') }}" class="collection-link">Explore collection</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Dramatique -->
+    <section class="why-choose">
+        <div class="section-container">
+            <h2>Why choose Dramatique</h2>
+            <p>Experience the difference that passion and expertise make</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{{ asset('Landing Page/Quality.png') }}" alt="Premium quality">
+                    </div>
+                    <h3>Premium quality</h3>
+                    <p>Meticulously crafted costumes with authentic details and superior materials</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{{ asset('Landing Page/Rental.png') }}" alt="Flexible rentals">
+                    </div>
+                    <h3>Flexible rentals</h3>
+                    <p>Convenient rental periods tailored to your production schedule</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <img src="{{ asset('Landing Page/Collection.png') }}" alt="Vast collection">
+                    </div>
+                    <h3>Vast collection</h3>
+                    <p> Unique costumes spanning every era and genre</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exclusive Offers -->
+    <section class="offers">
+        <div class="section-container">
+            <h2>Exclusive offers</h2>
+            <p>Exceptional value for your next theatrical masterpiece</p>
+            <div class="offers-grid">
+                <div class="offer-card">
+                    <div class="offer-badge">EARLY BIRD</div>
+                    <h3>Seasonal Spectacular</h3>
+                    <div class="offer-discount">20% OFF</div>
+                    <p>Book your holiday production costumes before October 31st and receive a generous early-bird discount on your entire order.</p>
+                    {# <a href="{{ path('app_contact') }}" class="btn btn-offer">Claim offer</a> #}
+                </div>
+
+                <div class="offer-card">
+                    <div class="offer-badge">GROUP DEAL</div>
+                    <h3>Ensemble Package</h3>
+                    <div class="offer-discount">Buy 4, Get 1</div>
+                    <p>Perfect for chorus lines and large casts. Rent four complete costumes and get the fifth rental absolutely free.</p>
+                    {# <a href="{{ path('app_contact') }}" class="btn btn-offer">Claim offer</a> #}
+                </div>
+
+                <div class="offer-card">
+                    <div class="offer-badge">SHORT RUN</div>
+                    <h3>Weekend Showcase</h3>
+                    <div class="offer-discount">$149 Flat Rate</div>
+                    <p>Special flat-rate pricing for short-run weekend performances. Includes pickup Friday and return Monday.</p>
+                    {# <a href="{{ path('app_contact') }}" class="btn btn-offer">Claim offer</a> #}
+                </div>
+
+                <div class="offer-card">
+                    <div class="offer-badge">BUNDLE</div>
+                    <h3>Director's Choice</h3>
+                    <div class="offer-discount">Free Upgrades</div>
+                    <p>Complimentary premium accessory upgrades when you book a complete lead character wardrobe package.</p>
+                    {# <a href="{{ path('app_contact') }}" class="btn btn-offer">Claim offer</a> #}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta">
+        <div class="section-container">
+            <h2>Ready to bring your vision to life?</h2>
+            <p>Join satisfied clients who trust Dramatique for their costume needs</p>
+            <div class="cta-buttons">
+                <a href="{{ path('app_contact') }}" class="btn btn-primary">Start your project</a>
+                <a href="{{ path('app_about') }}" class="btn btn-secondary">Meet the team</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Quick links</h4>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li>
+                    <li><a href="{{ path('app_about') }}">About us</a></li>
+                    <li><a href="{{ path('app_contact') }}">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="icon-location"></i>
+                        <span>2 Floor, Greenfield Building, Metro Manila, Philippines</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="icon-phone"></i>
+                        <span>0912 345 6789</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="icon-email"></i>
+                        <span>dramatique@gmail.com</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Follow us</h4>
+                <div class="social-links">
+                    <a href="https://facebook.com/" class="social-link">Facebook</a>
+                    <a href="https://instagram.com/" class="social-link">Instagram</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 Dramatique. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .landing-page {
+        min-height: 100vh;
+    }
+
+    .content-wrapper {
+        padding: 0 !important;
+    }
+
+    /* Navigation */
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 1rem 0;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #8B5CF6;
+        letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #374151;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+        color: #8B5CF6;
+    }
+
+    .nav-links .nav-cta {
+        background: #8B5CF6;
+        color: #ffffff;
+        padding: 0.6rem 1rem;
+        border-radius: 9999px;
+    }
+
+    .nav-links .nav-cta:hover {
+        background: #7C3AED;
+        color: #ffffff;
+    }
+
+    .nav-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        border: 1px solid #d1d5db;
+        background: #ffffff;
+        border-radius: 0.7rem;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        padding: 0;
+    }
+
+    .nav-toggle span {
+        width: 18px;
+        height: 2px;
+        background: #374151;
+        border-radius: 9999px;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* Hero Section */
+    .hero {
+        padding: 120px 2rem 80px;
+        background: linear-gradient(135deg, rgba(29, 13, 48, 0.78) 0%, rgba(72, 29, 96, 0.72) 100%),
+            url('{{ asset('Landing Page/Landing Page.png') }}') center/cover no-repeat;
+        background-blend-mode: multiply;
+        color: white;
+        text-align: center;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(2rem, 4.5vw, 3.5rem);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+        color: #fffdfb;
+        text-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero p {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+        margin-bottom: 1.75rem;
+        color: rgba(255, 255, 255, 0.96);
+        text-shadow: 0 8px 22px rgba(0, 0, 0, 0.42);
+        max-width: 620px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 2rem;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        font-family: 'Poppins', sans-serif;
+        transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, border-color 0.2s;
+        border: none;
+        cursor: pointer;
+        min-width: 170px;
+    }
+
+    .btn-primary {
+        background: #8B5CF6;
+        color: white;
+        box-shadow: 0 16px 40px rgba(139, 92, 246, 0.22);
+    }
+
+    .btn-primary:hover {
+        background: #7C3AED;
+        transform: translateY(-2px);
+        box-shadow: 0 18px 48px rgba(139, 92, 246, 0.28);
+    }
+
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.16);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.22);
+        border-color: rgba(255, 255, 255, 1);
+    }
+
+    /* Sections */
+    .section-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+    .section-container h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #1F2937;
+    }
+
+    .section-container > p {
+        font-size: 1.125rem;
+        color: #6B7280;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Collections */
+    .collections {
+        background: #F9FAFB;
+        padding: 5rem 0;
+    }
+
+    .collections-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .collection-card {
+        background: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .collection-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .collection-image {
+        height: 260px;
+        overflow: hidden;
+    }
+
+    .collection-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        filter: contrast(1.08) saturate(1.08);
+        transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .collection-card:hover .collection-image img {
+        transform: scale(1.02);
+        filter: contrast(1.12) saturate(1.12);
+    }
+
+    .collection-content {
+        padding: 1.5rem;
+    }
+
+    .collection-category {
+        display: inline-block;
+        background: #8B5CF6;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+    }
+
+    .collection-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1F2937;
+    }
+
+    .collection-content p {
+        color: #6B7280;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .collection-link {
+        color: #8B5CF6;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    .collection-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Why Choose */
+    .why-choose {
+        background: white;
+        padding: 5rem 0;
+    }
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
+        margin-top: 2.5rem;
+    }
+
+    .about-card {
+        background: #F9FAFB;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-align: left;
+    }
+
+    .about-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 35px rgba(15, 23, 42, 0.1);
+    }
+
+    .about-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: #111827;
+    }
+
+    .about-card p {
+        color: #4B5563;
+        line-height: 1.85;
+    }
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        border-radius: 50%;
+        background: #F3F4F6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .feature-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .feature-card h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #1F2937;
+    }
+
+    .feature-card p {
+        color: #6B7280;
+        font-size: 0.875rem;
+    }
+
+    /* Offers */
+    .offers {
+        background: #F9FAFB;
+        padding: 5rem 0;
+    }
+
+    .offers-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .offer-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        position: relative;
+        text-align: center;
+    }
+
+    .offer-badge {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #EF4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .offer-card h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1F2937;
+    }
+
+    .offer-discount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #8B5CF6;
+        margin-bottom: 1rem;
+    }
+
+    .offer-card p {
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-offer {
+        background: #8B5CF6;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.875rem;
+        display: inline-block;
+        transition: background 0.2s;
+    }
+
+    .btn-offer:hover {
+        background: #7C3AED;
+    }
+
+    /* CTA */
+    .cta {
+        background: linear-gradient(135deg, #8ea8ef 0%, #9f8de8 52%, #b78fe8 100%);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+    }
+
+    .cta .section-container h2 {
+        color: #ffffff;
+    }
+
+    .cta .section-container > p {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .cta h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .cta p {
+        font-size: 1.125rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Footer */
+    .footer {
+        background: #1F2937;
+        color: white;
+        padding: 3rem 0 1rem;
+    }
+
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-section h4 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .footer-section ul {
+        list-style: none;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-section a {
+        color: #9CA3AF;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .footer-section a:hover {
+        color: white;
+    }
+
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .contact-item i {
+        width: 20px;
+        height: 20px;
+        background: #8B5CF6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .social-link {
+        color: #9CA3AF;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .social-link:hover {
+        color: white;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid #374151;
+        padding-top: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .footer-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-links a {
+        color: #9CA3AF;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+
+    .footer-links a:hover {
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .nav-container {
+            padding: 0 1.25rem;
+        }
+
+        .nav-links {
+            gap: 1.25rem;
+        }
+
+        .section-container h2 {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 0.75rem 0;
+        }
+
+        .nav-container {
+            padding: 0 0.9rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+        }
+
+        .nav-toggle {
+            display: inline-flex;
+        }
+
+        .nav-links {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            gap: 0.25rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.9rem;
+            padding: 0.35rem;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+        }
+
+        .nav-links.is-open {
+            display: flex;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 0.6rem;
+        }
+
+        .nav-links a:hover {
+            background: #f5f3ff;
+        }
+
+        .nav-links .nav-cta {
+            display: inline-flex;
+            padding: 0.5rem 0.95rem;
+            margin: 0.25rem 0.4rem 0.2rem;
+        }
+
+        .hero {
+            padding: 128px 1rem 56px;
+            min-height: 70vh;
+        }
+
+        .hero-container {
+            max-width: 100%;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.85rem, 8vw, 2.45rem);
+        }
+
+        .hero p {
+            font-size: 1rem;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 320px;
+            min-width: 0;
+        }
+
+        .section-container {
+            padding: 2.5rem 1rem;
+        }
+
+        .collections,
+        .why-choose,
+        .offers,
+        .cta {
+            padding: 3.25rem 0;
+        }
+
+        .section-container h2,
+        .cta h2 {
+            font-size: 2rem;
+        }
+
+        .section-container > p,
+        .cta p {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .collections-grid,
+        .about-grid,
+        .features-grid,
+        .offers-grid {
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        .collection-image {
+            height: 240px;
+        }
+
+        .offer-card,
+        .feature-card {
+            padding: 1.5rem;
+        }
+
+        .hero-buttons,
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-container {
+            grid-template-columns: 1fr;
+            padding: 0 1rem;
+            text-align: left;
+        }
+
+        .footer-bottom {
+            padding: 1rem;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .footer-links {
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-container {
+            padding: 0 0.75rem;
+        }
+
+        .hero {
+            padding: 122px 0.75rem 48px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.65rem, 9vw, 2.1rem);
+        }
+
+        .section-container,
+        .footer-container,
+        .footer-bottom {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .collection-image {
+            height: 220px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleButton = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('#primary-nav');
+
+    if (!toggleButton || !navLinks) {
+        return;
+    }
+
+    toggleButton.addEventListener('click', function () {
+        const isOpen = navLinks.classList.toggle('is-open');
+        toggleButton.classList.toggle('is-open', isOpen);
+        toggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    navLinks.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                navLinks.classList.remove('is-open');
+                toggleButton.classList.remove('is-open');
+                toggleButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    document.addEventListener('click', function (event) {
+        if (window.innerWidth > 768) {
+            return;
+        }
+
+        const clickedInsideMenu = navLinks.contains(event.target) || toggleButton.contains(event.target);
+        if (!clickedInsideMenu) {
+            navLinks.classList.remove('is-open');
+            toggleButton.classList.remove('is-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+            navLinks.classList.remove('is-open');
+            toggleButton.classList.remove('is-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+});
+</script>
+{% endblock %}

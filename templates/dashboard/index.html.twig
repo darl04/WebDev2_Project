@@ -1,0 +1,226 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block page_title %}{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .welcome-card {
+            background: linear-gradient(135deg, #662d91 0%, #8b4bc4 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 12px rgba(102, 45, 145, 0.15);
+        }
+
+        .welcome-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle { 
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .role-badge.admin {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .role-badge.staff {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .role-badge.user {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: #662d91;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #662d91;
+        }
+
+        .quick-actions {
+            background-color: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+
+        .quick-actions-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #662d91;
+            color: white;
+            border-color: #662d91;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 45, 145, 0.2);
+        }
+
+        .action-icon {
+            font-size: 20px;
+        }
+
+        .access-message {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #662d91;
+            margin-top: 24px;
+        }
+
+        .access-message p {
+            margin: 0;
+            color: #666;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="welcome-card">
+        <h1 class="welcome-title">Welcome back, {{ app.user.username }}!</h1>
+        <p class="welcome-subtitle">Here's what's happening with DRAMATIQUE'S.</p>
+        
+        {% if is_granted('ROLE_ADMIN') %}
+            {# <span class="role-badge admin"><i class="fas fa-crown"></i> Administrator - You have Full Access</span> #}
+        {% elseif is_granted('ROLE_STAFF') %}
+            {# <span class="role-badge staff"><i class="fas fa-star"></i> Staff Member - You have Management Access</span> #}
+        {% else %}
+            {# <span class="role-badge user"><i class="fas fa-user"></i> Regular User - You have Limited Access</span> #}
+        {% endif %}
+    </div>
+
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="stat-icon fas fa-box"></i>
+                <div class="stat-label">Total Products</div>
+                <div class="stat-value">{{ totalProducts }}</div>
+            </div>
+            
+            <div class="stat-card">
+                <i class="stat-icon fas fa-users"></i>
+                <div class="stat-label">Total Customers</div>
+                <div class="stat-value">{{ totalCustomers }}</div>
+            </div>
+            
+            <div class="stat-card">
+                <i class="stat-icon fas fa-shopping-cart"></i>
+                <div class="stat-label">Total Orders</div>
+                <div class="stat-value">{{ totalOrders }}</div>
+            </div>
+            
+            <div class="stat-card">
+                <i class="stat-icon fas fa-peso-sign"></i>
+                <div class="stat-label">Total Revenue</div>
+                <div class="stat-value">₱{{ revenue|number_format(2) }}</div>
+                <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                    Orders: ₱{{ orderRevenue|number_format(2) }} | Rentals: ₱{{ rentalRevenue|number_format(2) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2 class="quick-actions-title">Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="{{ path('app_products_new') }}" class="action-btn">
+                    <i class="action-icon fas fa-plus-circle"></i>
+                    Add New Product
+                </a>
+                
+                <a href="{{ path('app_customer_new') }}" class="action-btn">
+                    <i class="action-icon fas fa-user-plus"></i>
+                    Add New Customer
+                </a>
+                
+                <a href="{{ path('app_orders_new') }}" class="action-btn">
+                    <i class="action-icon fas fa-shopping-bag"></i>
+                    Create New Order
+                </a>
+                
+                <a href="{{ path('app_products_index') }}" class="action-btn">
+                    <i class="action-icon fas fa-list"></i>
+                    View All Products
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="access-message">
+            <p><strong>Limited Access:</strong> You are viewing the dashboard as a regular user. Contact your administrator for additional permissions.</p>
+        </div>
+    {% endif %}
+{% endblock %}

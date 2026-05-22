@@ -1,0 +1,2 @@
+; Minimal OpenSSL config for PHP on Windows
+[openssl_init]

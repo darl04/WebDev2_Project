@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block body %}
+    <h1>Create User</h1>
+
+    {{ form_start(form) }}
+        <div class="form-group">{{ form_widget(form.username) }}</div>
+        <div class="form-group">{{ form_widget(form.isActive) }}</div>
+        <div class="form-group">{{ form_widget(form.roles) }}</div>
+        <div class="form-group">{{ form_widget(form.plainPassword) }}</div>
+
+        <button class="btn btn-primary">Create</button>
+    {{ form_end(form) }}
+{% endblock %}

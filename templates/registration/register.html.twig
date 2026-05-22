@@ -1,0 +1,300 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Register card styling - matches login page design */
+        .register-card {
+            background-color: #ffffff;
+            padding: 40px 36px;
+            border-radius: 12px;
+            box-shadow: 0 14px 40px rgba(8, 10, 20, 0.18);
+            width: min(100%, 460px);
+            max-width: 460px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .register-card, .register-content {
+            min-width: 0;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .register-logo-img {
+            max-width: 180px;
+            width: 180px;
+            height: auto;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+        }
+
+        .register-logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .register-subtitle {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .register-content {
+            background-color: #ffffff;
+            padding: 28px;
+            border-radius: 10px;
+        }
+
+        .register-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.12s ease, box-shadow 0.12s ease;
+            background: #fff;
+            color: var(--text-dark);
+        }
+
+        .form-control::placeholder { color: #a6a6a6; }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 22px rgba(102,45,145,0.08);
+        }
+
+        .fs-field {
+            margin-bottom: 18px;
+        }
+
+        .fs-label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .fs-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.12s ease, box-shadow 0.12s ease;
+            background: #fff;
+            color: var(--text-dark);
+        }
+
+        .fs-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 22px rgba(102,45,145,0.08);
+        }
+
+        .form-check {
+            margin-bottom: 16px;
+        }
+
+        .form-check-input {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .form-check-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background-color: #fff3f3;
+            border: 1px solid #ffd6d8;
+            color: #9b2a2a;
+        }
+
+        .alert ul { padding-left: 20px; margin: 0; }
+        .alert li { margin-bottom: 4px; }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .register-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-footer a:hover { text-decoration: underline; }
+
+        .register-button {
+            margin-top: 8px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Container wrapper for centered card */
+        .register-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: auto;
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .register-card {
+                padding: 30px 24px;
+                max-width: 520px;
+            }
+
+            .register-content {
+                padding: 24px;
+            }
+
+            .register-title {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .register-card {
+                width: 100%;
+                padding: 24px 18px;
+                max-width: 100%;
+            }
+
+            .register-content {
+                padding: 22px;
+            }
+
+            .register-logo-img {
+                max-width: 140px;
+                width: 140px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .register-card {
+                padding: 20px 14px;
+            }
+
+            .register-content {
+                padding: 16px;
+            }
+
+            .form-control,
+            .fs-input {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block auth_body %}
+    <div class="register-container">
+    <div class="register-card">
+        <div class="register-content">
+            <div class="register-header">
+                <img src="{{ asset('LOGOS/4.png') }}" alt="4" class="register-logo-img">
+                {# <p class="register-subtitle"></p> #}
+            </div>
+
+            <h2 class="register-title">Create Account</h2>
+
+            {% if form_errors(registrationForm)|length > 0 %}
+                <div class="alert alert-danger">
+                    {{ form_errors(registrationForm) }}
+                </div>
+            {% endif %}
+
+            {{ form_start(registrationForm) }}
+                <div class="form-group">
+                    {{ form_label(registrationForm.username, 'Username') }}
+                    {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control', 'placeholder': 'Choose a username'}}) }}
+                    {% if form_errors(registrationForm.username)|length > 0 %}
+                        <div class="alert alert-danger">{{ form_errors(registrationForm.username) }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(registrationForm.plainPassword, 'Password') }}
+                    {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Enter a strong password'}}) }}
+                    {% if form_errors(registrationForm.plainPassword)|length > 0 %}
+                        <div class="alert alert-danger">{{ form_errors(registrationForm.plainPassword) }}</div>
+                    {% endif %}
+                </div>
+
+                 <div class="fs-field">
+                    {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'fs-label'}}) }}
+                    {{ form_widget(registrationForm.email, {'attr': {'class': 'fs-input', 'placeholder': 'Enter your email'}}) }}
+                    {{ form_errors(registrationForm.email) }}
+                </div>
+
+                <div class="form-check form-group">
+                    {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(registrationForm.agreeTerms, 'I agree to the terms and conditions', {'label_attr': {'class': 'form-check-label'}}) }}
+                    {% if form_errors(registrationForm.agreeTerms)|length > 0 %}
+                        <div class="alert alert-danger">{{ form_errors(registrationForm.agreeTerms) }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary register-button">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            {{ form_end(registrationForm) }}
+
+            <div class="register-footer">
+                Already have an account? <a href="{{ path('app_login') }}">Sign in here</a>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

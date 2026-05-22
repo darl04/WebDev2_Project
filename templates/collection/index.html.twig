@@ -1,0 +1,647 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Collections - Dramatique{% endblock %}
+
+{% block body %}
+<style>
+    .content-wrapper {
+        padding: 0 !important;
+        background: #edf2ff;
+    }
+
+    .landing-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(180deg, #e7edff 0%, #f0e8ff 58%, #fff3e8 100%);
+    }
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        padding: 1rem 0;
+    }
+
+    .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #8B5CF6;
+        letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 1.75rem;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: #374151;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+        color: #8B5CF6;
+    }
+
+    .nav-links .nav-cta {
+        background: #8B5CF6;
+        color: #ffffff;
+        padding: 0.6rem 1rem;
+        border-radius: 9999px;
+    }
+
+    .nav-links .nav-cta:hover {
+        background: #7C3AED;
+        color: #ffffff;
+    }
+
+    .nav-toggle {
+        display: none;
+        width: 44px;
+        height: 44px;
+        border: 1px solid #d1d5db;
+        background: #ffffff;
+        border-radius: 0.7rem;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 5px;
+        padding: 0;
+    }
+
+    .nav-toggle span {
+        width: 18px;
+        height: 2px;
+        background: #374151;
+        border-radius: 9999px;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .nav-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .nav-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .collection-hero {
+        padding: 6rem 2rem 1.5rem;
+        background: transparent;
+        color: #111827;
+        text-align: center;
+        min-height: auto;
+    }
+
+    .collection-hero h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+        margin-bottom: 0.75rem;
+        line-height: 1.1;
+    }
+
+    .collection-hero p {
+        font-family: 'Poppins', sans-serif;
+        color: #6B7280;
+        font-size: 1.08rem;
+        max-width: 980px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    .section-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem 2rem 4rem;
+    }
+
+    .collection-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .collection-card {
+        background: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .collection-image {
+        width: 100%;
+        height: 260px;
+    }
+
+    .collection-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .onesies-collage {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        width: 100%;
+        height: 100%;
+        padding: 0.75rem;
+        background: #ffffff;
+    }
+
+    .onesies-collage img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.75rem;
+    }
+
+    .collection-card-content {
+        padding: 1.2rem 1.25rem 1.6rem;
+        text-align: center;
+    }
+
+    .collection-card-content h3 {
+        font-size: 1.05rem;
+        margin-bottom: 0.35rem;
+        color: #4B2E2E;
+    }
+
+    .collection-card-content p {
+        color: #8B6D5A;
+        line-height: 1.55;
+        margin-bottom: 0.5rem;
+        font-size: 0.92rem;
+    }
+
+    .collection-price {
+        font-size: 0.95rem;
+        color: #8F6F63;
+        font-weight: 500;
+    }
+
+    .onesies-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+    }
+
+    .onesies-label {
+        font-size: 2.1rem;
+        color: #1F2937;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .onesies-price {
+        text-align: center;
+        color: #8F6F63;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin: -0.75rem 0 1.5rem;
+    }
+
+    .onesies-items {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+
+    .onesies-item {
+        background: #ffffff;
+        border-radius: 0.85rem;
+        overflow: hidden;
+        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        text-align: center;
+        padding-bottom: 1rem;
+    }
+
+    .onesies-item img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .onesies-item span {
+        display: block;
+        margin-top: 0.8rem;
+        color: #4B2E2E;
+        font-size: 1.08rem;
+        font-weight: 600;
+    }
+
+    .onesies-item-price {
+        display: block;
+        margin-top: 0.3rem;
+        color: #8F6F63;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .simple-footer {
+        background: #111827;
+        width: 100%;
+        margin-top: auto;
+    }
+
+    .footer-bottom {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .footer-bottom p {
+        margin: 0;
+        color: #9CA3AF;
+        font-size: 0.95rem;
+    }
+
+    .footer-links {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-links a {
+        color: #8B5CF6;
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+        color: #A78BFA;
+    }
+
+    @media (max-width: 1024px) {
+        .nav-container {
+            padding: 0 1.25rem;
+        }
+
+        .nav-links {
+            gap: 1.25rem;
+        }
+
+        .collection-hero h1 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+        }
+    }
+
+    @media (max-width: 960px) {
+        .collection-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .onesies-items {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 0.75rem 0;
+        }
+
+        .nav-container {
+            padding: 0 0.9rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .logo {
+            font-size: 1.35rem;
+        }
+
+        .nav-toggle {
+            display: inline-flex;
+        }
+
+        .nav-links {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            gap: 0.25rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.9rem;
+            padding: 0.35rem;
+            box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+        }
+
+        .nav-links.is-open {
+            display: flex;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.7rem 0.8rem;
+            border-radius: 0.6rem;
+        }
+
+        .nav-links a:hover {
+            background: #f5f3ff;
+        }
+
+        .nav-links .nav-cta {
+            display: inline-flex;
+            padding: 0.5rem 0.95rem;
+            margin: 0.25rem 0.4rem 0.2rem;
+        }
+
+        .collection-hero {
+            padding: 128px 1rem 1.2rem;
+        }
+
+        .collection-hero h1 {
+            font-size: clamp(1.9rem, 8vw, 2.5rem);
+        }
+
+        .collection-hero p {
+            font-size: 1rem;
+        }
+
+        .section-container,
+        .onesies-section,
+        .footer-bottom {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .onesies-section {
+            padding-bottom: 2.5rem;
+        }
+
+        .onesies-label {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .onesies-item {
+            padding-bottom: 0.85rem;
+        }
+
+        .onesies-item img {
+            height: 220px;
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            text-align: left;
+            align-items: flex-start;
+        }
+
+        .onesies-items {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-container {
+            padding: 0 0.75rem;
+        }
+
+        .collection-hero {
+            padding: 122px 0.75rem 1rem;
+        }
+
+        .collection-hero h1 {
+            font-size: clamp(1.7rem, 10vw, 2.1rem);
+        }
+
+        .section-container,
+        .onesies-section,
+        .footer-bottom {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .onesies-item img {
+            height: 200px;
+        }
+    }
+</style>
+
+<div class="landing-page">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">DRAMATIQUE</div>
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-controls="collection-nav" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul id="collection-nav" class="nav-links">
+                <li><a href="{{ path('app_home') }}">Home</a></li>
+                <li><a href="{{ path('app_collection') }}">Collections</a></li>
+                <li><a href="{{ path('app_about') }}">About Us</a></li>
+                <li><a href="{{ path('app_contact') }}">Contact Us</a></li>
+                <li><a href="{{ path('app_login') }}" class="nav-cta">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="collection-hero">
+        <div>
+            <h1>Shop our collections</h1>
+            <p>Explore curated costume collections for every story, season, and performance.</p>
+        </div>
+    </section>
+
+    <section class="onesies-section">
+        <h2 class="onesies-label">Onesies Collection</h2>
+        <div class="onesies-items">
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Duck.png') }}" alt="Duck Onesie">
+                <span>Duck</span>
+                <span class="onesies-item-price">₱450.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Lamb.png') }}" alt="Lamb Onesie">
+                <span>Lamb</span>
+                <span class="onesies-item-price">₱470.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Cow.png') }}" alt="Cow Onesie">
+                <span>Cow</span>
+                <span class="onesies-item-price">₱490.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Pig.png') }}" alt="Pig Onesie">
+                <span>Pig</span>
+                <span class="onesies-item-price">₱460.00</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="onesies-section">
+        <h2 class="onesies-label">Inflatables Collection</h2>
+        <div class="onesies-items">
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Dinosaur.png') }}" alt="Dinosaur Inflatable">
+                <span>Dinosaur</span>
+                <span class="onesies-item-price">₱950.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Alien.png') }}" alt="Alien Inflatable">
+                <span>Alien</span>
+                <span class="onesies-item-price">₱980.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Penguin.png') }}" alt="Penguin Inflatable">
+                <span>Penguin</span>
+                <span class="onesies-item-price">₱920.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Wrestler.png') }}" alt="Wrestler Inflatable">
+                <span>Wrestler</span>
+                <span class="onesies-item-price">₱1050.00</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="onesies-section">
+        <h2 class="onesies-label">Mascots Collection</h2>
+        <div class="onesies-items">
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Lion Mascot.png') }}" alt="Lion Mascot">
+                <span>Lion</span>
+                <span class="onesies-item-price">₱1500.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Panda Mascot.png') }}" alt="Panda Mascot">
+                <span>Panda</span>
+                <span class="onesies-item-price">₱1550.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Eagle Mascot.png') }}" alt="Eagle Mascot">
+                <span>Eagle</span>
+                <span class="onesies-item-price">₱1480.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Frog Mascot.png') }}" alt="Frog Mascot">
+                <span>Frog</span>
+                <span class="onesies-item-price">₱1450.00</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="onesies-section">
+        <h2 class="onesies-label">Seasonal Collection</h2>
+        <div class="onesies-items">
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Snowman.png') }}" alt="Snowman Costume">
+                <span>Snowman</span>
+                <span class="onesies-item-price">₱650.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Scarecrow.png') }}" alt="Scarecrow Costume">
+                <span>Scarecrow</span>
+                <span class="onesies-item-price">₱680.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Sun.png') }}" alt="Sun Costume">
+                <span>Sun</span>
+                <span class="onesies-item-price">₱620.00</span>
+            </div>
+            <div class="onesies-item">
+                <img src="{{ asset('Landing Page/Bunny.png') }}" alt="Bunny Costume">
+                <span>Bunny</span>
+                <span class="onesies-item-price">₱660.00</span>
+            </div>
+        </div>
+    </section>
+
+    <footer class="simple-footer">
+        <div class="footer-bottom">
+            <p>© 2026 Dramatique. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#privacy">Privacy Policy</a>
+                <a href="#terms">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleButton = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('#collection-nav');
+
+    if (!toggleButton || !navLinks) {
+        return;
+    }
+
+    toggleButton.addEventListener('click', function () {
+        const isOpen = navLinks.classList.toggle('is-open');
+        toggleButton.classList.toggle('is-open', isOpen);
+        toggleButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    navLinks.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                navLinks.classList.remove('is-open');
+                toggleButton.classList.remove('is-open');
+                toggleButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+
+    document.addEventListener('click', function (event) {
+        if (window.innerWidth > 768) {
+            return;
+        }
+
+        const clickedInsideMenu = navLinks.contains(event.target) || toggleButton.contains(event.target);
+        if (!clickedInsideMenu) {
+            navLinks.classList.remove('is-open');
+            toggleButton.classList.remove('is-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768) {
+            navLinks.classList.remove('is-open');
+            toggleButton.classList.remove('is-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+        }
+    });
+});
+</script>
+{% endblock %}

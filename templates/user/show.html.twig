@@ -1,0 +1,232 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block page_title %}User Details{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(224, 224, 224, 0.6);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .card-body {
+            margin-top: 24px;
+        }
+
+        .details-container {
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid rgba(224, 224, 224, 0.5);
+        }
+
+        .info-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+        }
+
+        .info-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-row {
+            display: flex;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.3);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            min-width: 150px;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: var(--text-light);
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .detail-value:empty::before {
+            content: '-';
+            color: #999;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 4px;
+        }
+
+        .role-badge-admin {
+            background: rgba(102, 45, 145, 0.1);
+            color: var(--primary-color);
+        }
+
+        .role-badge-staff {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+
+        .role-badge-user {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 45, 145, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 45, 145, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">User Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="details-container">
+                <!-- Basic Information Section -->
+                <div class="info-section">
+                    <div class="section-title">Basic Information</div>
+                    <div class="detail-row">
+                        <div class="detail-label">ID</div>
+                        <div class="detail-value">{{ user.id }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Username</div>
+                        <div class="detail-value">{{ user.username }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Email</div>
+                        <div class="detail-value">{{ user.email ?: '-' }}</div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Full Name</div>
+                        <div class="detail-value">{{ user.fullName ?: '-' }}</div>
+                    </div>
+                </div>
+
+                <!-- Account Settings Section -->
+                <div class="info-section">
+                    <div class="section-title">Account Settings</div>
+                    <div class="detail-row">
+                        <div class="detail-label">Account Status</div>
+                        <div class="detail-value">
+                            {% if user.isActive %}
+                                <span style="color: #4CAF50; font-weight: 600;">Active</span>
+                            {% else %}
+                                <span style="color: #f44336; font-weight: 600;">Disabled</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="detail-row">
+                        <div class="detail-label">Roles</div>
+                        <div class="detail-value">
+                            {% for role in user.getRoles() %}
+                                {% set roleName = role|replace({'ROLE_': ''})|lower %}
+                                <span class="role-badge role-badge-{{ roleName }}">{{ role|replace({'ROLE_': ''}) }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-actions">
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+{% endblock %}

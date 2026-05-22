@@ -1,0 +1,557 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block page_title %}Activity Logs{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
+    <style>
+        /* ================================
+           Hide Default DataTables Elements
+           ================================ */
+        #activityLogsTable_wrapper .dataTables_length,
+        #activityLogsTable_wrapper .dataTables_filter,
+        #activityLogsTable_wrapper .dataTables_info,
+        #activityLogsTable_wrapper .dataTables_paginate {
+            display: none !important;
+        }
+
+        /* ================================
+           Custom Controls Container
+           ================================ */
+        .custom-table-controls-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .custom-table-controls-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            gap: 20px;
+        }
+
+        /* ================================
+           Entries Control Styling
+           ================================ */
+        .entries-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .entries-control label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .entries-control select {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 44px 12px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            appearance: none;
+            transition: all 0.3s ease;
+            outline: none;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .entries-control select:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(102, 45, 145, 0.15);
+        }
+
+        .entries-control select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 45, 145, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ================================
+           Search Control Styling
+           ================================ */
+        .search-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-control label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .search-control input {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 18px 12px 42px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            min-width: 320px;
+            background: white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 14px center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-control input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 45, 145, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23662d91' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+        }
+
+        .search-control input::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        /* ================================
+           Info Control Styling
+           ================================ */
+        .info-control {
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ================================
+           Pagination Control Styling
+           ================================ */
+        .pagination-control {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-control button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            height: 44px;
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: white;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pagination-control button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(102, 45, 145, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .pagination-control button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .pagination-control button:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(102, 45, 145, 0.3);
+        }
+
+        .pagination-control button.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border-color: var(--primary-color);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(102, 45, 145, 0.4);
+            transform: scale(1.05);
+        }
+
+        .pagination-control button.active:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 45, 145, 0.4);
+        }
+
+        .pagination-control button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            background: #f8f8f8;
+            color: #ccc;
+            border-color: #e5e5e5;
+        }
+
+        .pagination-control button:disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            background: #f8f8f8;
+            border-color: #e5e5e5;
+        }
+
+        /* ================================
+           Table Container (White Box)
+           ================================ */
+        .table-container {
+            background: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid rgba(224, 224, 224, 0.6);
+        }
+
+        .table-wrapper-inner {
+            overflow-x: auto;
+        }
+
+        /* ================================
+           Table Styling
+           ================================ */
+        #activityLogsTable {
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0 !important;
+            width: 100%;
+        }
+
+        #activityLogsTable thead th {
+            background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.8px;
+            padding: 18px 20px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-dark);
+        }
+
+        #activityLogsTable tbody td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+            font-size: 14px;
+        }
+
+        #activityLogsTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #activityLogsTable tbody tr:hover {
+            background-color: rgba(102, 45, 145, 0.04);
+        }
+
+        #activityLogsTable tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ================================
+           Action Badge Styling
+           ================================ */
+        .action-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .action-badge-create {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+        }
+
+        .action-badge-update {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(23, 162, 184, 0.3);
+        }
+
+        .action-badge-delete {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+        }
+
+        .action-badge-login {
+            background: linear-gradient(135deg, #662d91 0%, #8b4bc4 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(102, 45, 145, 0.3);
+        }
+
+        .action-badge-logout {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+        }
+
+        .action-badge-view {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #212529;
+            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+        }
+
+        /* ================================
+           Role Badge Styling
+           ================================ */
+        .role-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .role-badge-admin {
+            background: #dc3545;
+            color: white;
+        }
+
+        .role-badge-staff {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .role-badge-user {
+            background: #28a745;
+            color: white;
+        }
+
+        /* ================================
+           Responsive Adjustments
+           ================================ */
+        @media (max-width: 768px) {
+            .custom-table-controls-top,
+            .custom-table-controls-bottom {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .entries-control,
+            .search-control {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-control input,
+            .entries-control select {
+                width: 100%;
+                min-width: 100%;
+            }
+
+            .pagination-control {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .pagination-control button {
+                min-width: 40px;
+                height: 40px;
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Top Controls: Entries & Search (OUTSIDE WHITE BOX) -->
+    <div class="custom-table-controls-top">
+        <div class="entries-control">
+            <label for="entriesSelect">Show</label>
+            <select id="entriesSelect">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <span>entries</span>
+        </div>
+        <div class="search-control">
+            <label for="searchInput">Search:</label>
+            <input type="text" id="searchInput" placeholder="Search logs...">
+        </div>
+    </div>
+
+    <!-- Table Container (WHITE BOX - ONLY TABLE) -->
+    <div class="table-container">
+        <div class="table-wrapper-inner">
+            <table id="activityLogsTable" class="table display">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                        <th>Target</th>
+                        <th>When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>
+                            <strong>{{ log.username ?? '-' }}</strong>
+                            {% if log.userId %}
+                                <span style="color: #999; font-size: 12px;">(ID: {{ log.userId }})</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.role %}
+                                {% set roleItems = log.role|split(',') %}
+                                {% for roleItem in roleItems %}
+                                    {% set cleanedRole = roleItem|trim %}
+                                    {% set roleClass = cleanedRole|lower|replace({'role_': ''}) %}
+                                    <span class="role-badge role-badge-{{ roleClass }}">{{ cleanedRole|replace({'ROLE_': ''}) }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: #999;">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set actionLower = log.action|lower %}
+                            {% if 'create' in actionLower or 'add' in actionLower %}
+                                <span class="action-badge action-badge-create">{{ log.action }}</span>
+                            {% elseif 'update' in actionLower or 'edit' in actionLower %}
+                                <span class="action-badge action-badge-update">{{ log.action }}</span>
+                            {% elseif 'delete' in actionLower or 'remove' in actionLower %}
+                                <span class="action-badge action-badge-delete">{{ log.action }}</span>
+                            {% elseif 'login' in actionLower %}
+                                <span class="action-badge action-badge-login">{{ log.action }}</span>
+                            {% elseif 'logout' in actionLower %}
+                                <span class="action-badge action-badge-logout">{{ log.action }}</span>
+                            {% elseif 'view' in actionLower or 'show' in actionLower %}
+                                <span class="action-badge action-badge-view">{{ log.action }}</span>
+                            {% else %}
+                                <span class="action-badge action-badge-view">{{ log.action }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ log.target }}</td>
+                        <td>
+                            {% if log.createdAt %}
+                                <span style="white-space: nowrap;">{{ log.createdAt|date('Y-m-d H:i:s') }}</span>
+                            {% else %}
+                                <span style="color: #999;">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bottom Controls: Info & Pagination (OUTSIDE WHITE BOX) -->
+    <div class="custom-table-controls-bottom">
+        <div class="info-control" id="tableInfo">
+            Showing 1 to {{ logs|length }} of {{ logs|length }} logs
+        </div>
+        <div class="pagination-control" id="paginationButtons">
+            <button id="btnFirst">First</button>
+            <button id="btnPrevious">Previous</button>
+            <button class="active">1</button>
+            <button id="btnNext">Next</button>
+            <button id="btnLast">Last</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const table = $('#activityLogsTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": false,
+                "info": false,
+                "lengthChange": false,
+                "pageLength": 10,
+                "dom": 't',
+                "language": {
+                    "zeroRecords": "No records found"
+                }
+            });
+
+            // Connect custom controls to DataTables
+            $('#entriesSelect').on('change', function() {
+                table.page.len(parseInt(this.value)).draw();
+                updateInfo();
+            });
+
+            $('#searchInput').on('keyup', function() {
+                table.search(this.value).draw();
+                updateInfo();
+            });
+
+            // Pagination buttons
+            $('#btnFirst').on('click', function() {
+                table.page('first').draw('page');
+                updateInfo();
+            });
+
+            $('#btnPrevious').on('click', function() {
+                table.page('previous').draw('page');
+                updateInfo();
+            });
+
+            $('#btnNext').on('click', function() {
+                table.page('next').draw('page');
+                updateInfo();
+            });
+
+            $('#btnLast').on('click', function() {
+                table.page('last').draw('page');
+                updateInfo();
+            });
+
+            // Update info text
+            function updateInfo() {
+                const info = table.page.info();
+                const infoText = info.recordsDisplay === 0 
+                    ? 'No logs available'
+                    : `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay} logs${info.recordsTotal !== info.recordsDisplay ? ' (filtered from ' + info.recordsTotal + ' total logs)' : ''}`;
+                $('#tableInfo').text(infoText);
+
+                // Update pagination buttons state
+                $('#btnFirst, #btnPrevious').prop('disabled', info.page === 0);
+                $('#btnNext, #btnLast').prop('disabled', info.page === info.pages - 1);
+            }
+
+            // Initial info update
+            updateInfo();
+        });
+    </script>
+{% endblock %}

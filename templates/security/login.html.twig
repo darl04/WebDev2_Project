@@ -1,0 +1,284 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Strong contrast card on purple background */
+        .login-card {
+            background-color: #ffffff;
+            padding: 40px 36px;
+            border-radius: 12px;
+            box-shadow: 0 14px 40px rgba(8, 10, 20, 0.18);
+            width: min(100%, 460px);
+            max-width: 460px;
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+        .login-card, .login-content {
+            min-width: 0;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-logo-img {
+            max-width: 180px;
+            width: 180px;
+            height: auto;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+        }
+
+        .login-logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .login-subtitle {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.12s ease, box-shadow 0.12s ease;
+            background: #fff;
+            color: var(--text-dark);
+        }
+
+        .form-control::placeholder { color: #a6a6a6; }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 22px rgba(102,45,145,0.08);
+        }
+
+        .alert-danger {
+            background-color: #fff3f3;
+            border: 1px solid #ffd6d8;
+            color: #9b2a2a;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        .alert-info {
+            background-color: #f3f7ff;
+            border: 1px solid #d8e6ff;
+            color: #1a3a6f;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        .alert-info a { color: var(--primary-color); text-decoration: underline; }
+
+        /* Use shared button styles for consistent sizing */
+        .btn-login {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-login i { margin-right: 8px; }
+
+        .login-footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-light); }
+
+        .login-footer a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+
+        .login-footer a:hover { text-decoration: underline; }
+
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 14px;
+        }
+
+        .btn-google {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            min-width: 220px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid #d8d8d8;
+            background: #fff;
+            color: var(--text-dark);
+            box-shadow: 0 6px 18px rgba(8, 10, 20, 0.08);
+        }
+
+        .btn-google:hover {
+            text-decoration: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 24px rgba(102,45,145,0.12);
+        }
+
+        .login-title { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 20px; }
+
+        /* Inner content box for form clarity */
+        .login-content {
+            background-color: #ffffff;
+            padding: 28px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 30px 24px;
+                max-width: 520px;
+            }
+
+            .login-content {
+                padding: 24px;
+            }
+
+            .login-title {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .login-card {
+                width: 100%;
+                padding: 24px 18px;
+                max-width: 100%;
+            }
+
+            .login-content {
+                padding: 22px;
+            }
+
+            .login-logo-img {
+                max-width: 140px;
+                width: 140px;
+            }
+
+            .btn-google {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .login-card {
+                padding: 20px 14px;
+            }
+
+            .login-content {
+                padding: 16px;
+            }
+
+            .form-control {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block auth_body %}
+    <div class="login-card">
+        <div class="login-content">
+            <div class="login-header">
+                <img src="{{ asset('LOGOS/4.png') }}" alt="4" class="login-logo-img">
+
+                {# <p class="login-subtitle"></p> #}
+            </div>
+
+            {% if app.user %}
+                <div class="alert-info">
+                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+            {% endif %}
+
+            {% if error %}
+                <div class="alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <h2 class="login-title">Please sign in</h2>
+
+            <form method="post">
+                <div class="form-group">
+                    <label for="inputUsername" class="form-label">Username</label>
+                    <input 
+                        type="text" 
+                        value="{{ last_username }}" 
+                        name="username" 
+                        id="inputUsername" 
+                        class="form-control" 
+                        autocomplete="username" 
+                        required 
+                        autofocus
+                        placeholder="Enter your username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword" class="form-label">Password</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="inputPassword" 
+                        class="form-control" 
+                        autocomplete="current-password" 
+                        required
+                        placeholder="Enter your password"
+                    >
+                </div>
+
+                <input 
+                    type="hidden" 
+                    name="_csrf_token" 
+                    data-controller="csrf-protection" 
+                    value="{{ csrf_token('authenticate') }}"
+                >
+
+                <button class="btn btn-primary btn-login" type="submit">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <div class="login-footer">
+                Don't have an account? <a href="{{ path('app_register') }}">Register here</a>
+            </div>
+            <div class="auth-wrapper">
+                <a href="{{ path('connect_google_start') }}" id="google-login-link" class="btn-google">
+                    <ion-icon name="logo-google" class="icon-left"></ion-icon>
+                    Continue with Google
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

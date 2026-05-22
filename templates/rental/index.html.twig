@@ -1,0 +1,453 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DRAMATIQUE{% endblock %}
+
+{% block page_title %}Rental Management{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
+    <style>
+        #rentalsTable_wrapper .dataTables_length,
+        #rentalsTable_wrapper .dataTables_filter,
+        #rentalsTable_wrapper .dataTables_info,
+        #rentalsTable_wrapper .dataTables_paginate {
+            display: none !important;
+        }
+
+        .custom-table-controls-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .custom-table-controls-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            gap: 20px;
+        }
+
+        .entries-control, .search-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .entries-control label, .search-control label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .entries-control select {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 44px 12px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            appearance: none;
+            transition: all 0.3s ease;
+            outline: none;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .search-control input {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 18px 12px 42px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            outline: none;
+            min-width: 320px;
+            background: white;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 14px center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        }
+
+        .entries-control select:hover,
+        .search-control input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 45, 145, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .table-container {
+            background: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+            border: 1px solid rgba(224, 224, 224, 0.6);
+        }
+
+        #rentalsTable {
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0 !important;
+            width: 100%;
+        }
+
+        #rentalsTable thead th {
+            background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.8px;
+            padding: 18px 20px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-dark);
+        }
+
+        #rentalsTable tbody td {
+            padding: 16px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+            font-size: 14px;
+        }
+
+        #rentalsTable tbody tr:hover {
+            background-color: rgba(102, 45, 145, 0.04);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge-rented {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-badge-returned {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .status-badge-overdue {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .status-badge-cancelled {
+            background: rgba(158, 158, 158, 0.1);
+            color: #9e9e9e;
+            border: 1px solid rgba(158, 158, 158, 0.3);
+        }
+
+        .product-image-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-products {
+            color: #999;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .products-cell {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .action-buttons-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(102, 45, 145, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 45, 145, 0.4);
+        }
+
+        .info-control {
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination-control {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-control button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            height: 44px;
+            padding: 10px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: white;
+            color: var(--text-dark);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-control button:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-control button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="custom-table-controls-top">
+        <div class="entries-control">
+            <label for="entriesSelect">Show</label>
+            <select id="entriesSelect">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <span>entries</span>
+        </div>
+        <div class="search-control">
+            <label for="searchInput">Search:</label>
+            <input type="text" id="searchInput" placeholder="Search rentals...">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-wrapper-inner">
+            <table id="rentalsTable" class="table display">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Customer</th>
+                        <th>Products</th>
+                        <th>Rental Date</th>
+                        <th>Return Date</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th style="text-align: center; width: 200px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for rental in rentals %}
+                    <tr>
+                        <td>
+                            {% if rental.products|length > 0 %}
+                                {% set firstProduct = rental.products|first %}
+                                {% if firstProduct.image %}
+                                    <img src="{{ firstProduct.image }}" alt="{{ firstProduct.name }}" class="product-image-thumbnail">
+                                {% else %}
+                                    <span class="no-products">No image</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="no-products">No image</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ rental.customer ? rental.customer.name : 'N/A' }}</td>
+                        <td class="products-cell">
+                            {% if rental.products|length > 0 %}
+                                {% for product in rental.products %}
+                                    {{ product.name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="no-products">No products</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ rental.rentalDate ? rental.rentalDate|date('Y-m-d') : 'N/A' }}</td>
+                        <td>{{ rental.returnDate ? rental.returnDate|date('Y-m-d') : 'N/A' }}</td>
+                        <td>{% if rental.rentalPrice %}₱{{ rental.rentalPrice|number_format(2, '.', ',') }}{% else %}N/A{% endif %}</td>
+                        <td>
+                            {% set statusClass = rental.status|lower %}
+                            <span class="status-badge status-badge-{{ statusClass }}">{{ rental.status }}</span>
+                        </td>
+                        <td style="text-align: center; white-space: nowrap;">
+                            <a href="{{ path('app_rental_show', {'id': rental.id}) }}" class="action-link">
+                                <i class="fas fa-eye"></i> Show
+                            </a>
+                            {% set isOwner = rental.getCreatedBy() and app.user and rental.getCreatedBy().getId() == app.user.getId() %}
+                            {% set createdByAdmin = rental.getCreatedBy() and 'ROLE_ADMIN' in rental.getCreatedBy().getRoles() %}
+                            {% if is_granted('ROLE_ADMIN') or isOwner or (is_granted('ROLE_STAFF') and createdByAdmin) %}
+                                <a href="{{ path('app_rental_edit', {'id': rental.id}) }}" class="action-link">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                {{ include('rental/_delete_form.html.twig') }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="custom-table-controls-bottom">
+        <div class="info-control" id="tableInfo">
+            Showing 1 to {{ rentals|length }} of {{ rentals|length }} rentals
+        </div>
+        <div class="pagination-control" id="paginationButtons">
+            <button id="btnFirst">First</button>
+            <button id="btnPrevious">Previous</button>
+            <button class="active">1</button>
+            <button id="btnNext">Next</button>
+            <button id="btnLast">Last</button>
+        </div>
+    </div>
+
+    <div class="action-buttons-container">
+        <a href="{{ path('app_rental_new') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create new
+        </a>
+    </div>
+
+        <div class="history-section">
+            <div class="history-section-header">
+                <h3 class="history-section-title">Rental History</h3>
+                <p class="history-section-subtitle">Recent rental activity (creates and edits).</p>
+            </div>
+
+            <div class="table-container history-table-container">
+                <div class="table-wrapper-inner">
+                    <table id="rentalHistoryTable" class="table display">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Rental</th>
+                                <th>By</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for log in rentalHistory %}
+                            <tr>
+                                <td>{{ log.createdAt ? log.createdAt|date('M d, Y H:i') : 'N/A' }}</td>
+                                <td>{{ log.action }}</td>
+                                <td>{{ log.target }}</td>
+                                <td>{{ log.username ?: 'System' }}</td>
+                                <td>{{ log.target }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="history-empty-state">No rental activity has been recorded yet.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.5/js/dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const table = $('#rentalsTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": false,
+                "info": false,
+                "lengthChange": false,
+                "pageLength": 10,
+                "dom": 't',
+                "language": {
+                    "zeroRecords": "No records found"
+                }
+            });
+
+            $('#entriesSelect').on('change', function() {
+                table.page.len(parseInt(this.value)).draw();
+                updateInfo();
+            });
+
+            $('#searchInput').on('keyup', function() {
+                table.search(this.value).draw();
+                updateInfo();
+            });
+
+            $('#btnFirst').on('click', function() {
+                table.page('first').draw('page');
+                updateInfo();
+            });
+
+            $('#btnPrevious').on('click', function() {
+                table.page('previous').draw('page');
+                updateInfo();
+            });
+
+            $('#btnNext').on('click', function() {
+                table.page('next').draw('page');
+                updateInfo();
+            });
+
+            $('#btnLast').on('click', function() {
+                table.page('last').draw('page');
+                updateInfo();
+            });
+
+            function updateInfo() {
+                const info = table.page.info();
+                const infoText = info.recordsDisplay === 0 
+                    ? 'No rentals available'
+                    : `Showing ${info.start + 1} to ${info.end} of ${info.recordsDisplay} rentals${info.recordsTotal !== info.recordsDisplay ? ' (filtered from ' + info.recordsTotal + ' total rentals)' : ''}`;
+                $('#tableInfo').text(infoText);
+
+                $('#btnFirst, #btnPrevious').prop('disabled', info.page === 0);
+                $('#btnNext, #btnLast').prop('disabled', info.page === info.pages - 1);
+            }
+
+            updateInfo();
+        });
+    </script>
+{% endblock %}
+
