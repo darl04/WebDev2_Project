@@ -33,9 +33,6 @@ RUN composer install --no-interaction --no-scripts --optimize-autoloader && \
 # Copy the application source after dependencies are cached.
 COPY . .
 
-# Install frontend dependencies and build assets
-RUN npm install && npm run build
-
 # Create a default .env file if one does not already exist.
 RUN if [ ! -f /app/.env ]; then \
     DB_URL=${DATABASE_URL:-${MYSQL_URL:-mysql://root@127.0.0.1:3306/app_db?serverVersion=8.0}}; \
