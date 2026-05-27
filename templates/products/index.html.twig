@@ -2,165 +2,340 @@
 
 {% block title %}DRAMATIQUE{% endblock %}
 
-{% block page_title %}Product Management{% endblock %}
+{% block page_title %}
+    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
+        Product Management
+    {% else %}
+        {# no topbar title for non-admins as requested #}
+    {% endif %}
+{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
     <style>
         .shop-hero {
-            background: linear-gradient(135deg, rgba(102, 45, 145, 0.08), rgba(139, 75, 196, 0.12));
-            border: 1px solid rgba(102, 45, 145, 0.12);
-            border-radius: 18px;
-            padding: 28px 28px 24px;
+            background: #ececec;
+            border-radius: 14px;
+            padding: 30px 34px;
             margin-bottom: 24px;
         }
 
         .shop-hero h2 {
-            font-size: 30px;
-            margin-bottom: 8px;
-            color: var(--text-dark);
+            margin: 0;
+            font-size: 38px;
+            color: #2c2c2c;
         }
 
         .shop-hero p {
-            color: var(--text-light);
-            max-width: 760px;
-            line-height: 1.65;
+            margin-top: 8px;
+            color: #666;
+            font-size: 14px;
         }
-            .shop-card-collection {
-                display: inline-flex;
-                align-self: flex-start;
-                padding: 6px 12px;
-                border-radius: 999px;
-                background: rgba(102, 45, 145, 0.1);
-                color: var(--primary-color);
-                font-size: 12px;
-                font-weight: 700;
-                letter-spacing: 0.03em;
-                text-transform: uppercase;
-            }
 
-            
+        .shop-shell {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 26px;
+        }
+
+        .shop-sidebar {
+            background: #fff;
+            border: 1px solid #ece8e3;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .shop-sidebar-title {
+            font-size: 22px;
+            margin-bottom: 14px;
+            color: #222;
+        }
+
+        .shop-filter-block {
+            padding-top: 16px;
+            border-top: 1px solid #efece8;
+            margin-top: 16px;
+        }
+
+        .shop-filter-block:first-of-type {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        .shop-filter-heading {
+            font-size: 14px;
+            font-weight: 700;
+            color: #373737;
+            margin-bottom: 10px;
+        }
+
+        .shop-filter-head-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .shop-reset-link {
+            color: #9c948a;
+            font-size: 12px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .shop-reset-link:hover {
+            color: #7a5bb5;
+        }
+
+        .shop-check-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .shop-check-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .shop-check-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #5f5f5f;
+            font-size: 14px;
+        }
+
+        .shop-check-label input {
+            width: 16px;
+            height: 16px;
+            accent-color: #b89cf5;
+        }
+
+        .shop-check-count {
+            min-width: 28px;
+            height: 24px;
+            border-radius: 999px;
+            border: 1px solid #ece7e1;
+            background: #fff;
+            color: #8f877e;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 0 8px;
+        }
+
+        .shop-filter-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .shop-filter-list li {
+            color: #6f6f6f;
+            font-size: 14px;
+            padding: 5px 0;
+        }
+
+        .shop-main {
+            min-width: 0;
+        }
+
+        .shop-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            color: #676767;
+            font-size: 14px;
+        }
+
+        .shop-sort {
+            border: 1px solid #e5e2de;
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: #fff;
+            color: #595959;
+        }
+
+        .shop-active-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .shop-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            background: #d7c6ff;
+            color: #4f3d72;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 5px 11px;
+        }
+
         .shop-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
         }
 
         .shop-card {
-            background: var(--bg-white);
-            border: 1px solid rgba(224, 224, 224, 0.85);
-            border-radius: 18px;
+            background: #fff;
+            border: 1px solid #efe8e2;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.22s ease, box-shadow 0.22s ease;
+            transition: transform .18s ease, box-shadow .18s ease;
         }
 
         .shop-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 36px rgba(102, 45, 145, 0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
         }
 
         .shop-card-image {
-            aspect-ratio: 1 / 1;
-            background: linear-gradient(180deg, #f8f5fc 0%, #ffffff 100%);
+            position: relative;
+            background: #f7f2ea;
+            aspect-ratio: 1 / 0.86;
+            padding: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 18px;
         }
+
+        /* Removed product discount badges */
 
         .shop-card-image img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            border-radius: 14px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
         .shop-card-placeholder {
             width: 100%;
             height: 100%;
-            min-height: 220px;
+            border: 2px dashed #d9d0c4;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #999;
-            border: 2px dashed rgba(102, 45, 145, 0.2);
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.7);
-            font-weight: 600;
+            color: #877c70;
+            font-size: 13px;
         }
 
         .shop-card-body {
-            padding: 18px 18px 20px;
+            padding: 12px 14px 14px;
+        }
+
+        .shop-card-meta {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex: 1;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6e6e6e;
         }
 
         .shop-card-title {
-            font-size: 18px;
+            margin: 4px 0 8px;
+            font-size: 20px;
+            color: #252525;
             line-height: 1.25;
-            color: var(--text-dark);
+            min-height: 48px;
+        }
+
+        .shop-card-desc {
+            margin: 0 0 10px;
+            color: #616161;
+            font-size: 13px;
+            line-height: 1.3;
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .shop-card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
         }
 
         .shop-card-price {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #a1722f;
+            white-space: nowrap;
         }
 
-        .shop-card-description {
-            color: var(--text-light);
-            line-height: 1.6;
-            font-size: 14px;
-            flex: 1;
-        }
-
-        .shop-card-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-
-        .btn-shop,
         .btn-order {
-            flex: 1 1 140px;
-            min-height: 44px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            border-radius: 12px;
+            gap: 6px;
+            border-radius: 10px;
             text-decoration: none;
-            font-weight: 600;
-            padding: 10px 16px;
-            transition: all 0.22s ease;
-        }
-
-        .btn-shop {
-            background: white;
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-shop:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-order {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            color: white;
-            box-shadow: 0 6px 16px rgba(102, 45, 145, 0.24);
+            font-weight: 700;
+            font-size: 13px;
+            padding: 9px 12px;
+            color: #4f3d72;
+            background: #d7c6ff;
+            transition: background 0.2s ease;
         }
 
         .btn-order:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 22px rgba(102, 45, 145, 0.3);
+            background: #c7b0fb;
+        }
+
+        .shop-features {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .shop-feature {
+            background: #fff;
+            border: 1px solid #ece7e1;
+            border-radius: 10px;
+            padding: 14px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .shop-feature-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: #f1eaff;
+            color: #7a5bb5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+
+        .shop-feature-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2e2e2e;
+        }
+
+        .shop-feature-desc {
+            font-size: 12px;
+            color: #777;
         }
 
         /* ================================
@@ -560,6 +735,18 @@
            Responsive Adjustments
            ================================ */
         @media (max-width: 768px) {
+            .shop-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .shop-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .shop-features {
+                grid-template-columns: 1fr;
+            }
+
             .custom-table-controls-top,
             .custom-table-controls-bottom {
                 flex-direction: column;
@@ -599,6 +786,12 @@
             .btn-primary {
                 width: 100%;
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .shop-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -730,37 +923,104 @@
         </div>
     {% else %}
         <div class="shop-hero">
-            <h2>Shop the catalog</h2>
-            <p>Browse the available products below, open a product for details, or go straight to ordering. This view is built for customers who want to shop visually instead of scanning a management table.</p>
+            <h2>Shop</h2>
+            <p>Home / Shop</p>
         </div>
 
-        <div class="shop-grid">
-            {% for product in products %}
-                <article class="shop-card">
-                    <div class="shop-card-image">
-                        {% if product.image %}
-                            <img src="{{ product.image }}" alt="{{ product.name }}">
-                        {% else %}
-                            <div class="shop-card-placeholder">No image available</div>
-                        {% endif %}
+        <div class="shop-shell">
+            <section class="shop-main">
+                <div class="shop-toolbar">
+                    <div>Showing 1-{{ products|length }} of {{ products|length }} results</div>
+                    <div>
+                        <form method="get" action="{{ path('app_products_index') }}">
+                            <label for="shopSort">Sort by:</label>
+                            <select id="shopSort" name="sort" class="shop-sort" onchange="this.form.submit()">
+                                <option value="default" {{ sort == 'default' ? 'selected' : '' }}>Default Sorting</option>
+                                <option value="price_asc" {{ sort == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="price_desc" {{ sort == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                            </select>
+                            {% if selectedCategory %}
+                                <input type="hidden" name="category" value="{{ selectedCategory }}" />
+                            {% endif %}
+                        </form>
                     </div>
-                    <div class="shop-card-body">
-                        <h3 class="shop-card-title">{{ product.name }}</h3>
-                        <div class="shop-card-price">₱{{ product.price|number_format(2, '.', ',') }}</div>
-                        <div class="shop-card-description">
-                            {{ product.description ?: 'Ready to order.' }}
-                        </div>
-                        <div class="shop-card-actions">
-                            <a href="{{ path('app_products_show', {'id': product.id}) }}" class="btn-shop">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                            <a href="{{ path('app_orders_new', {'product': product.id}) }}" class="btn-order">
-                                <i class="fas fa-cart-shopping"></i> Order Now
-                            </a>
+                </div>
+
+                <div class="shop-active-filters">
+                    {# Filter chips removed per request #}
+                </div>
+
+                <div class="shop-grid">
+                    {% for product in products %}
+                        <article class="shop-card">
+                            <div class="shop-card-image">
+                                {# discount badge removed as requested #}
+                                {% if product.image %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <div class="shop-card-placeholder">No image available</div>
+                                {% endif %}
+                            </div>
+                            <div class="shop-card-body">
+                                {# category and rating removed #}
+                                <h3 class="shop-card-title">{{ product.name }}</h3>
+                                <p class="shop-card-desc">{{ product.description }}</p>
+                                    <div class="shop-card-bottom">
+                                    <span class="shop-card-price">₱{{ product.price|number_format(2, '.', ',') }}</span>
+                                    {# If product is an inflatable (collectionType contains 'inflatable'), hide selector and default to Standard #}
+                                    {% set ctype = product.collectionType is defined and product.collectionType ? product.collectionType|lower : '' %}
+                                    {% if ctype matches '/inflatable/' %}
+                                        <form method="post" action="{{ path('app_cart_add', {'id': product.id}) }}" style="display:flex;align-items:center;gap:8px;">
+                                            <input type="hidden" name="size" value="Standard" />
+                                            <button type="submit" class="btn-order" style="display:inline-flex;align-items:center;gap:8px;">
+                                                <i class="fas fa-cart-shopping"></i> Add to cart
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{{ path('app_cart_add', {'id': product.id}) }}" style="display:flex;align-items:center;gap:8px;">
+                                            <select name="size" aria-label="Size" style="padding:8px;border:1px solid #e5e2de;border-radius:8px;background:#fff;font-weight:600;color:#595959;">
+                                                <option value="Standard">Standard</option>
+                                                <option value="Small">Small</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="Large">Large</option>
+                                            </select>
+                                            <button type="submit" class="btn-order" style="display:inline-flex;align-items:center;gap:8px;">
+                                                <i class="fas fa-cart-shopping"></i> Add to cart
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </article>
+                    {% else %}
+                        <p>No products available at the moment.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="shop-features">
+                    <div class="shop-feature">
+                        <span class="shop-feature-icon"><i class="fas fa-box-open"></i></span>
+                        <div>
+                            <div class="shop-feature-title">Free Shipping</div>
+                            <div class="shop-feature-desc">Free shipping for order above threshold.</div>
                         </div>
                     </div>
-                </article>
-            {% endfor %}
+                    <div class="shop-feature">
+                        <span class="shop-feature-icon"><i class="far fa-credit-card"></i></span>
+                        <div>
+                            <div class="shop-feature-title">Flexible Payment</div>
+                            <div class="shop-feature-desc">Multiple secure payment options.</div>
+                        </div>
+                    </div>
+                    <div class="shop-feature">
+                        <span class="shop-feature-icon"><i class="fas fa-headset"></i></span>
+                        <div>
+                            <div class="shop-feature-title">24x7 Support</div>
+                            <div class="shop-feature-desc">We support online all days.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     {% endif %}
 {% endblock %}

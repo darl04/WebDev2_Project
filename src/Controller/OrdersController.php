@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Orders;
 use App\Entity\Stock;
 use App\Entity\Products;
+use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Form\OrdersType;
 use App\Repository\OrdersRepository;
@@ -37,39 +38,98 @@ final class OrdersController extends AbstractController
         CustomerRepository $customerRepository
     ): Response
     {
-        $order = new Orders();
+        // Build cart items from session to power checkout flow
+        $session = $request->getSession();
+        $cart = $session->get('cart', []);
 
-        $productId = $request->query->getInt('product');
-        if ($productId > 0) {
-            $selectedProduct = $productsRepository->find($productId);
-            if ($selectedProduct) {
-                $order->addProduct($selectedProduct);
+        $items = [];
+        $total = 0.0;
+        $count = 0;
+        $skippedRentalOnlyItems = false;
+
+        foreach ($cart as $productId => $entry) {
+            $product = $productsRepository->find($productId);
+            if (!$product) {
+                continue;
             }
+
+            if (strtolower((string) $product->getCollectionType()) === 'mascots') {
+                $skippedRentalOnlyItems = true;
+                continue;
+            }
+
+            // Support legacy cart format productId => quantity (int)
+            // and new format productId => ['quantity' => int, 'size' => 'M']
+            if (is_array($entry)) {
+                $quantity = (int) ($entry['quantity'] ?? $entry['qty'] ?? 1);
+                $size = $entry['size'] ?? null;
+            } else {
+                $quantity = (int) $entry;
+                $size = null;
+            }
+
+            $subtotal = ($product->getPrice() ?? 0) * $quantity;
+            $items[] = [
+                'product' => $product,
+                'quantity' => $quantity,
+                'size' => $size,
+                
+                'subtotal' => $subtotal,
+            ];
+            $total += $subtotal;
+            $count += $quantity;
         }
 
         $user = $this->getUser();
+        $matchedCustomer = null;
         if ($user instanceof User && $user->getEmail()) {
             $matchedCustomer = $customerRepository->findOneBy(['email' => $user->getEmail()]);
-            if ($matchedCustomer) {
-                $order->setCustomer($matchedCustomer);
-            }
         }
 
-        $form = $this->createForm(OrdersType::class, $order);
-        $form->handleRequest($request);
+        // Standard shipping fee (PHP)
+        $shipping = count($items) > 0 ? 50.0 : 0.0;
+        $grandTotal = $total + $shipping;
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // set owner
+        if ($skippedRentalOnlyItems) {
+            $this->addFlash('warning', 'Mascot items are available for rental only and were removed from your sale cart.');
+        }
+
+        // If this is a POST from the checkout form, create the order from cart
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('checkout', $request->request->get('_token'))) {
+                throw $this->createAccessDeniedException('Invalid CSRF token.');
+            }
+
+            if (empty($items)) {
+                $this->addFlash('warning', 'Your cart is empty.');
+                return $this->redirectToRoute('app_cart_index');
+            }
+
+            $order = new Orders();
+            // Add each product once (existing Order entity models quantity as a global count)
+            foreach ($items as $item) {
+                $order->addProduct($item['product']);
+            }
+
+            $order->setQuantity($count ?: 1);
             $order->setCreatedBy($this->getUser());
-            
-            // set status to Pending if not set
             if (!$order->getStatus()) {
                 $order->setStatus('Pending');
             }
-
-            // automatically set the creation time with current timezone
             if (!$order->getCreatedAt()) {
-                $order->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get())));
+                $order->setCreatedAt(new \DateTimeImmutable('now', new \DateTimeZone(date_default_timezone_get() ?: 'UTC')));
+            }
+
+            if ($matchedCustomer) {
+                $order->setCustomer($matchedCustomer);
+            } else {
+                // create a lightweight guest customer to satisfy DB constraint
+                $guest = new Customer();
+                $guest->setName('Guest');
+                $guest->setEmail('guest+' . uniqid() . '@example.local');
+                $guest->setPhoneNumber('0000000000');
+                $entityManager->persist($guest);
+                $order->setCustomer($guest);
             }
 
             $entityManager->persist($order);
@@ -81,14 +141,47 @@ final class OrdersController extends AbstractController
                 $entityManager->flush(); // Flush stock changes
             }
 
-            $this->addFlash('success', 'Order created successfully.');
+            // Save a lightweight summary of the order in session so confirmation can display details
+            $summaryItems = [];
+            foreach ($items as $it) {
+                $prod = $it['product'];
+                $summaryItems[] = [
+                    'productId' => $prod->getId(),
+                    'name' => $prod->getName(),
+                    'image' => $prod->getImage(),
+                    'description' => $prod->getDescription(),
+                    'price' => $prod->getPrice(),
+                    'quantity' => $it['quantity'],
+                    'size' => $it['size'] ?? null,
+                    'subtotal' => $it['subtotal'],
+                ];
+            }
 
-            return $this->redirectToRoute('app_orders_index', [], Response::HTTP_SEE_OTHER);
+            $session->set('last_order_summary', [
+                'orderId' => $order->getId(),
+                'items' => $summaryItems,
+                'total' => $total,
+                'count' => $count,
+                'shipping' => $shipping,
+                'grandTotal' => $grandTotal,
+            ]);
+
+            // Clear the cart
+            $session->set('cart', []);
+
+            $this->addFlash('success', 'Order placed successfully.');
+
+            return $this->redirectToRoute('app_orders_confirmation', ['id' => $order->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('orders/new.html.twig', [
-            'order' => $order,
-            'form' => $form,
+        // Render a checkout page populated from the cart
+        return $this->render('orders/checkout.html.twig', [
+            'items' => $items,
+            'total' => $total,
+            'shipping' => $shipping,
+            'grandTotal' => $grandTotal,
+            'count' => $count,
+            'customer' => $matchedCustomer,
         ]);
     }
 
@@ -197,6 +290,34 @@ final class OrdersController extends AbstractController
         }
 
         return $this->redirectToRoute('app_orders_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/confirmation/{id}', name: 'app_orders_confirmation', methods: ['GET'])]
+    public function confirmation(Request $request, Orders $order): Response
+    {
+        $session = $request->getSession();
+        $summary = $session->get('last_order_summary', null);
+
+        // If summary belongs to this order id, pass it; otherwise ignore
+        if ($summary && ($summary['orderId'] ?? null) !== $order->getId()) {
+            $summary = null;
+        }
+
+        // Defensive: if a summary exists but lacks a count, compute it from items
+        if ($summary && !array_key_exists('count', $summary)) {
+            $count = 0;
+            if (!empty($summary['items']) && is_array($summary['items'])) {
+                foreach ($summary['items'] as $it) {
+                    $count += (int) ($it['quantity'] ?? $it['qty'] ?? 0);
+                }
+            }
+            $summary['count'] = $count;
+        }
+
+        return $this->render('orders/confirmation.html.twig', [
+            'order' => $order,
+            'summary' => $summary,
+        ]);
     }
 
     /**

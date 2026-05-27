@@ -239,6 +239,102 @@
             margin-right: 0;
         }
 
+        .nav-submenu {
+            margin: 0;
+            padding: 4px 0 10px 52px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-filter-toggle {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: left;
+            color: var(--text-light);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-filter-toggle:hover {
+            background-color: rgba(102, 45, 145, 0.08);
+            color: var(--primary-color);
+        }
+
+        .nav-filter-toggle i {
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-submenu[open] .nav-filter-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .nav-category-list {
+            list-style: none;
+            margin: 2px 0 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .nav-submenu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 12px;
+            padding: 4px 10px;
+            margin-top: 2px;
+        }
+
+        .nav-sublink-count {
+            min-width: 24px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #8f877e;
+            border: 1px solid rgba(224, 224, 224, 0.9);
+            border-radius: 999px;
+            padding: 1px 6px;
+            background: #fff;
+        }
+
+        .nav-sublink {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-sublink:hover {
+            background-color: rgba(102, 45, 145, 0.08);
+            color: var(--primary-color);
+        }
+
+        .nav-sublink.active {
+            background-color: rgba(102, 45, 145, 0.12);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .sidebar.collapsed .nav-submenu {
+            display: none;
+        }
+
         /* Main Content Styles */
         .main-content {
             flex: 1;
@@ -671,10 +767,34 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li class="nav-item">
-                        <a href="{{ path('app_dashboard') }}" class="nav-link {{ app.request.get('_route') == 'app_dashboard' ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-chart-line"></i>
-                            <span>Dashboard</span>
+                        <a href="{{ path('app_products_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_products' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-store"></i>
+                            <span>Shop</span>
                         </a>
+                        {% if not (is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF')) %}
+                            <details class="nav-submenu" {% if app.request.get('_route') starts with 'app_products' %}open{% endif %}>
+                                <summary class="nav-filter-toggle">
+                                    <span>Filter Options</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </summary>
+                                <div class="nav-submenu-header">
+                                    <span>Category</span>
+                                    <a href="{{ path('app_products_index') }}" class="nav-sublink" style="padding:0; font-size:12px;">Reset</a>
+                                </div>
+                                <ul class="nav-category-list">
+                                    {% for categoryName, categoryCount in categories|default({}) %}
+                                        <li>
+                                            <a href="{{ path('app_products_index', {'category': categoryName}) }}" class="nav-sublink {{ selectedCategory|default('') == categoryName ? 'active' : '' }}">
+                                                {{ categoryName }}
+                                                <span class="nav-sublink-count">{{ categoryCount }}</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li><span class="nav-sublink">No categories</span></li>
+                                    {% endfor %}
+                                </ul>
+                            </details>
+                        {% endif %}
                     </li>
 
                     {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
@@ -732,8 +852,9 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="topbar">
-                <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="topbar-title">{% block page_title %}{% endblock %}</div>
                 <div class="topbar-user">
+                    {{ render(controller('App\\Controller\\CartController::mini')) }}
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="profile-dropdown-trigger">
                             <div class="user-avatar-container">

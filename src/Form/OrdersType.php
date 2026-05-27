@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Orders;
 use App\Entity\Products;
 use App\Entity\Customer;
+use App\Repository\ProductsRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -27,6 +28,11 @@ class OrdersType extends AbstractType
                 'multiple' => true,
                 'expanded' => false, // Set to true for checkboxes, false for select
                 'placeholder' => 'Select products',
+                'query_builder' => function (ProductsRepository $productsRepository) {
+                    return $productsRepository->createQueryBuilder('p')
+                        ->andWhere('LOWER(p.collectionType) <> :rentalOnly OR p.collectionType IS NULL')
+                        ->setParameter('rentalOnly', 'mascots');
+                },
             ])
             ->add('quantity', null, [
                 'label' => 'Quantity',

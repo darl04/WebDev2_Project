@@ -1,3 +1,109 @@
-body {
-    background-color: skyblue;
+:root{
+    --primary-color: #cfa6f0; /* pastel purple primary */
+    --primary-dark: #b58ff1; /* slightly darker for hover */
+    --primary-light: #e9d9ff;
+    --purple-900: #3b0f5a;
+    --purple-800: #4a1f6b;
+    --purple-700: #5b2b86;
+    --purple-600: #662d91;
+    --purple-500: #8b4bc4;
+    --purple-300: #cfa6f0;
+    --purple-100: #f6eefb;
+    --accent: var(--primary-color);
+    --bg: #faf7fd;
+    --card-bg: #ffffff;
+    --muted: #6b5b6d;
 }
+
+body {
+    background: linear-gradient(180deg, var(--bg) 0%, #f3eefb 100%);
+    color: var(--muted);
+    font-family: 'Roboto', sans-serif;
+}
+
+a {
+    color: var(--accent);
+}
+
+.btn-primary, button[type="submit"], input[type="submit"] {
+    background: var(--primary-color);
+    color: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.card, .panel {
+    background: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(86,61,124,0.06);
+}
+
+.badge-accent {
+    background: var(--purple-300);
+    color: var(--purple-900);
+    padding: 0.2rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+}
+
+.site-header {
+    background: linear-gradient(90deg, var(--purple-600), var(--purple-500));
+    color: white;
+}
+
+/* Make images responsive by default */
+img, .product-image-thumbnail, .shop-card-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Responsive table wrapper used across templates */
+.table-wrapper-inner, .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Make primary buttons easier to tap on mobile */
+@media (max-width: 720px) {
+    .btn, .btn-primary, .btn-order {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 14px;
+        min-width: 0;
+    }
+
+    /* Collapse grid cards into 1-column where needed */
+    .shop-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Reduce sidebar impact on small screens (optional) */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(0);
+    }
+
+    .content-wrapper, .shop-shell {
+        padding: 12px !important;
+    }
+}
+
+/* Utility */
+.text-accent { color: var(--accent); }
+
+/* Ensure forms use the purple focus ring */
+input:focus, textarea:focus, select:focus {
+    outline: 3px solid rgba(139,75,196,0.12);
+    outline-offset: 2px;
+}
+
