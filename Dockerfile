@@ -53,10 +53,15 @@ FROM php:8.3-fpm AS runtime
 # Set the working directory inside the runtime container.
 WORKDIR /app
 
-# Install nginx and curl for request handling and health checks.
+# Install nginx, curl and compile-time deps then build PHP extensions needed at runtime.
 RUN apt-get update && apt-get install -y \
     nginx \
     curl \
+    build-essential \
+    default-libmysqlclient-dev \
+    libzip-dev \
+    zlib1g-dev \
+    && docker-php-ext-install pdo pdo_mysql bcmath zip || true \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the prepared application from the builder stage.
