@@ -1,10 +1,12 @@
-# Multi-stage build: builder installs dependencies, prepares Symfony assets, and warms the production cache.
+# =========================
+# Builder Stage
+# =========================
 FROM php:8.3-fpm AS builder
 
-# Set the working directory for all following commands.
+# Set working directory
 WORKDIR /app
 
-# Install required tools for Composer, Git, and frontend build assets.
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -12,48 +14,68 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
     libpq-dev \
-    && docker-php-ext-install pdo pdo_mysql bcmath \
+    default-libmysqlclient-dev \
+    libzip-dev \
+    zlib1g-dev \
+    && docker-php-ext-install pdo pdo_mysql bcmath zip \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Composer globally so Composer commands are available.
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+    --install-dir=/usr/local/bin \
+    --filename=composer
 
-# Allow Composer to run as root in the container.
+# Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Copy dependency manifests first to leverage Docker caching.
+# Copy composer files first for caching
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies including redis-messenger
-RUN composer install --no-interaction --no-scripts --optimize-autoloader && \
-    composer require symfony/redis-messenger --no-interaction
+# Install PHP dependencies
+RUN composer install \
+    --no-interaction \
+    --no-scripts \
+    --optimize-autoloader
 
-# Copy the application source after dependencies are cached.
+# Copy application files
 COPY . .
 
-# Create a default .env file if one does not already exist.
+# Create default .env if missing
 RUN if [ ! -f /app/.env ]; then \
     DB_URL=${DATABASE_URL:-${MYSQL_URL:-mysql://root@127.0.0.1:3306/app_db?serverVersion=8.0}}; \
-    echo "APP_ENV=${APP_ENV:-prod}\nAPP_DEBUG=${APP_DEBUG:-false}\nAPP_SECRET=${APP_SECRET:-ChangeMe}\nDEFAULT_URI=${DEFAULT_URI:-http://localhost}\nDATABASE_URL=$DB_URL\nMAILER_DSN=${MAILER_DSN:-null://null}\nMESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}\n" > /app/.env; \
+    echo "APP_ENV=prod\n\
+APP_DEBUG=false\n\
+APP_SECRET=ChangeMe\n\
+DEFAULT_URI=http://localhost\n\
+DATABASE_URL=$DB_URL\n\
+MAILER_DSN=null://null\n\
+MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0\n" > /app/.env; \
     fi
 
-# Reinstall dependencies and optimize the autoloader for production.
-# We include redis-messenger here and ignore platform reqs to ensure it installs even if the extension check is finicky in the container.
-RUN composer require symfony/redis-messenger --no-interaction --ignore-platform-reqs && \
-    composer install --no-interaction --optimize-autoloader --no-ansi || true
+# Install Symfony Redis Messenger
+RUN composer require symfony/redis-messenger --no-interaction
 
-# Warm the Symfony cache in production mode for faster startup.
-RUN php bin/console cache:warmup --env=prod --no-debug || true
+# Optimize autoloader
+RUN composer install \
+    --no-interaction \
+    --optimize-autoloader \
+    --no-ansi
+
+# Warm Symfony cache
+RUN php bin/console cache:warmup --env=prod --no-debug
 
 
+# =========================
+# Runtime Stage
+# =========================
 FROM php:8.3-fpm AS runtime
 
-# Set the working directory inside the runtime container.
+# Set working directory
 WORKDIR /app
 
-# Install nginx, curl and compile-time deps then build PHP extensions needed at runtime.
+# Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     nginx \
     curl \
@@ -61,39 +83,42 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     libzip-dev \
     zlib1g-dev \
-    && docker-php-ext-install pdo pdo_mysql bcmath zip || true \
+    && docker-php-ext-install pdo pdo_mysql bcmath zip \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the prepared application from the builder stage.
+# Copy app from builder
 COPY --from=builder /app /app
 
-# Safely extract extensions from builder
+# Copy PHP extensions/config
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 
-# Create runtime directories and fix permissions for the web server user.
+# Set permissions
 RUN mkdir -p /app/var && \
     chown -R www-data:www-data /app && \
     chmod -R 755 /app && \
     chmod -R 775 /app/var
 
-# Use the main nginx configuration file for the Symfony app.
+# Configure Nginx
 COPY nginx-main.conf /etc/nginx/nginx.conf
 
-# Remove default nginx site configs and add the Symfony site configuration.
-RUN rm -rf /etc/nginx/conf.d/* /etc/nginx/sites-enabled /etc/nginx/sites-available
+RUN rm -rf /etc/nginx/conf.d/* \
+    /etc/nginx/sites-enabled \
+    /etc/nginx/sites-available
+
 COPY nginx.conf /etc/nginx/conf.d/symfony.conf
 
-# Copy and enable the container entrypoint script.
+# Copy entrypoint
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Healthcheck verifies the app is serving HTTP correctly.
+# Healthcheck
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-# Expose HTTP port 80 from the container.
+# Expose port
 EXPOSE 80
 
-# Start the container using the custom entrypoint.
+# Start container
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
