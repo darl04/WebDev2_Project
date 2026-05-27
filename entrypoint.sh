@@ -32,17 +32,52 @@ echo "Waiting for PHP-FPM to start..."
 sleep 2
 
 # Ensure JWT keys exist
-if [ ! -f config/jwt/private.pem ]; then
-    echo "Generating JWT keys..."
-    mkdir -p config/jwt
-    php bin/console lexik:jwt:generate-keypair --no-interaction || echo "Warning: Failed to generate JWT keys"
+# Ensure JWT keys exist — only attempt if keys are missing and we're not
+# relying on a JWT secret environment variable. If your deployment uses
+# `JWT_SECRET_KEY` or other env-based configuration, set those in Railway
+# instead of forcing key generation here.
+if [ ! -f config/jwt/private.pem ] && [ -z "$JWT_SECRET_KEY" ]; then
+        echo "Generating JWT keys (private.pem missing and JWT_SECRET_KEY not set)..."
+        mkdir -p config/jwt
+        php bin/console lexik:jwt:generate-keypair --no-interaction || echo "Warning: Failed to generate JWT keys"
+else
+        echo "Skipping JWT key generation (keys exist or JWT_SECRET_KEY provided)."
 fi
 
-echo "Running migrations..."
-php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true
+# Wait for the database to become available before running migrations or
+# loading fixtures. This prevents connection-refused errors during startup
+# when the DB provisioned by Railway isn't immediately ready.
+wait_for_db() {
+    echo "Waiting for database availability..."
+    local i=0
+    local max=30
+    while [ $i -lt $max ]; do
+        if php bin/console doctrine:query:sql "SELECT 1" >/dev/null 2>&1; then
+            echo "Database is available."
+            return 0
+        fi
+        i=$((i+1))
+        sleep 2
+    done
+    return 1
+}
 
-echo "Loading fixtures..."
-php bin/console doctrine:fixtures:load --append --no-interaction || true
+if wait_for_db; then
+    echo "Running migrations..."
+    php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true
+
+    # Only load fixtures in non-production environments to avoid destructive
+    # operations on production data. Use an explicit deploy job if you need
+    # to seed production data.
+    if [ "${APP_ENV:-prod}" != "prod" ]; then
+        echo "Loading fixtures (non-production environment)..."
+        php bin/console doctrine:fixtures:load --append --no-interaction || true
+    else
+        echo "Skipping fixtures in production environment."
+    fi
+else
+    echo "Database not reachable after timeout; skipping migrations and fixtures."
+fi
 
 echo "Starting Nginx..."
 nginx -g "daemon off;"
