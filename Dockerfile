@@ -97,8 +97,8 @@ COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Healthcheck verifies the app is serving HTTP correctly.
-HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
+    CMD sh -c 'curl -f "http://127.0.0.1:${PORT:-80}/" || exit 1'
 
 # Expose HTTP port 80 from the container.
 EXPOSE 80

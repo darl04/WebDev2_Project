@@ -53,13 +53,6 @@ echo "Clearing and warming Symfony cache with runtime env vars..."
 php bin/console cache:clear --env=prod --no-debug || true
 php bin/console cache:warmup --env=prod --no-debug || true
 
-echo "Starting PHP-FPM..."
-php-fpm -F &
-PHP_PID=$!
-
-echo "Waiting for PHP-FPM to start..."
-sleep 2
-
 # Generate JWT key files when missing (paths are in JWT_SECRET_KEY / JWT_PUBLIC_KEY).
 if [ ! -f config/jwt/private.pem ]; then
     echo "Generating JWT keys (private.pem missing)..."
@@ -69,42 +62,51 @@ else
     echo "JWT keys already present; skipping key generation."
 fi
 
-# Wait for the database to become available before running migrations or
-# loading fixtures. This prevents connection-refused errors during startup
-# when the DB provisioned by Railway isn't immediately ready.
-wait_for_db() {
-    echo "Waiting for database availability..."
-    local i=0
-    local max=60
-    while [ $i -lt $max ]; do
-        if php bin/console doctrine:query:sql "SELECT 1" >/dev/null 2>&1; then
-            echo "Database is available."
-            return 0
+echo "Starting PHP-FPM..."
+php-fpm -F &
+
+echo "Waiting for PHP-FPM to start..."
+sleep 2
+
+# Railway (and similar platforms) route traffic to $PORT, not 80.
+PORT="${PORT:-80}"
+echo "Configuring Nginx to listen on port ${PORT}..."
+sed "s/PORT_PLACEHOLDER/${PORT}/g" /etc/nginx/conf.d/symfony.conf > /tmp/symfony.conf
+mv /tmp/symfony.conf /etc/nginx/conf.d/symfony.conf
+
+run_migrations_when_db_ready() {
+    wait_for_db() {
+        echo "Waiting for database availability..."
+        local i=0
+        local max=60
+        while [ $i -lt $max ]; do
+            if php bin/console doctrine:query:sql "SELECT 1" >/dev/null 2>&1; then
+                echo "Database is available."
+                return 0
+            fi
+            i=$((i+1))
+            sleep 2
+        done
+        return 1
+    }
+
+    if wait_for_db; then
+        echo "Running migrations..."
+        php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true
+
+        if [ "${APP_ENV:-prod}" != "prod" ]; then
+            echo "Loading fixtures (non-production environment)..."
+            php bin/console doctrine:fixtures:load --append --no-interaction || true
+        else
+            echo "Skipping fixtures in production environment."
         fi
-        i=$((i+1))
-        sleep 2
-    done
-    return 1
+    else
+        echo "Database not reachable after timeout; skipping migrations and fixtures."
+    fi
 }
 
-if wait_for_db; then
-    echo "Running migrations..."
-    php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration || true
+# Run migrations in the background so Nginx can bind $PORT immediately (avoids 502 on Railway).
+run_migrations_when_db_ready &
 
-    # Only load fixtures in non-production environments to avoid destructive
-    # operations on production data. Use an explicit deploy job if you need
-    # to seed production data.
-    if [ "${APP_ENV:-prod}" != "prod" ]; then
-        echo "Loading fixtures (non-production environment)..."
-        php bin/console doctrine:fixtures:load --append --no-interaction || true
-    else
-        echo "Skipping fixtures in production environment."
-    fi
-else
-    echo "Database not reachable after timeout; skipping migrations and fixtures."
-fi
-
-echo "Starting Nginx..."
-nginx -g "daemon off;"
-
-wait $PHP_PID
+echo "Starting Nginx on port ${PORT}..."
+exec nginx -g "daemon off;"
