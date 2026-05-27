@@ -23,12 +23,18 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+    --install-dir=/usr/local/bin \
+    --filename=composer
+
 # Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Copy composer files first
 COPY composer.json composer.lock ./
+
+# Create empty .env file for Symfony
+RUN touch .env
 
 # Install dependencies without scripts
 RUN composer install \
@@ -44,9 +50,10 @@ RUN composer require symfony/redis-messenger \
     --no-interaction \
     --no-scripts
 
-# Optimize Composer
+# Optimize Composer without scripts
 RUN composer install \
     --no-interaction \
+    --no-scripts \
     --optimize-autoloader \
     --no-ansi
 
