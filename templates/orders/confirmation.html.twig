@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block body %}
+<section style="max-width:900px;margin:40px auto;">
+    <div style="background:#fff;border-radius:12px;padding:28px;border:1px solid #ece3dd;box-shadow:0 8px 24px rgba(36,20,10,0.04);">
+        <div style="text-align:center;padding-bottom:12px;border-bottom:1px solid #f1ece8;margin-bottom:18px;">
+            <h2 style="font-size:20px;margin:0 0 6px;">Thank you for your purchase</h2>
+            <p style="color:#6f6258;margin:0;font-size:14px;">Your order is now being processed.</p>
+        </div>
+
+        {% if summary is defined and summary %}
+            <div style="max-width:820px;margin:18px auto 6px;">
+                {% if summary.items is defined %}
+                    {% set items = summary.items %}
+                {% elseif summary[0] is defined %}
+                    {% set items = summary %}
+                {% else %}
+                    {% set items = [] %}
+                {% endif %}
+
+                {% set qty = 0 %}
+                {% for item in items %}
+                    {% set qty = qty + (item.quantity|default(0)) %}
+                {% endfor %}
+
+                {% set orderNumber = summary.orderId|default(order.getId()) %}
+                {% set itemCount = summary.count|default(qty) %}
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <h4 style="margin:0;font-size:16px;">Order #{{ orderNumber }}</h4>
+                    <div style="color:#8d8179;font-size:13px;">Items: {{ items|length }} • Qty: {{ itemCount }}</div>
+                </div>
+
+                <div style="background:#fafafa;border-radius:8px;padding:12px;border:1px solid #f0ece8;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="color:#6f6258;font-size:13px;text-align:left;">
+                                <th style="width:64px;padding:8px 6px;"></th>
+                                <th style="padding:8px 6px;">Product</th>
+                                <th style="width:15%;text-align:right;padding:8px 6px;">Unit Price</th>
+                                <th style="width:10%;text-align:center;padding:8px 6px;">Qty</th>
+                                <th style="width:15%;text-align:right;padding:8px 6px;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td style="padding:10px 6px;border-top:1px solid #fff;">
+                                        {% if item.product is defined and item.product is not empty %}
+                                            {% if attribute(item.product, 'image') %}
+                                                <img src="{{ attribute(item.product, 'image') }}" alt="{{ attribute(item.product, 'name') }}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #efe7e2;background:#f7f4f2;" />
+                                            {% else %}
+                                                <div style="width:56px;height:56px;border-radius:8px;border:1px solid #efe7e2;background:#f7f4f2;display:flex;align-items:center;justify-content:center;color:#8f8279;font-size:11px;">No image</div>
+                                            {% endif %}
+                                        {% else %}
+                                            {% if item.image %}
+                                                <img src="{{ item.image }}" alt="{{ item.name }}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid #efe7e2;background:#f7f4f2;" />
+                                            {% else %}
+                                                <div style="width:56px;height:56px;border-radius:8px;border:1px solid #efe7e2;background:#f7f4f2;display:flex;align-items:center;justify-content:center;color:#8f8279;font-size:11px;">No image</div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding:10px 6px;border-top:1px solid #fff;">
+                                        <div style="font-weight:700;color:#241a14;margin-bottom:4px;">
+                                            {% if item.product is defined and item.product is not empty %}
+                                                {{ attribute(item.product, 'name') }}
+                                            {% else %}
+                                                {{ item.name }}
+                                            {% endif %}
+                                        </div>
+                                        {% if item.size is defined and item.size %}
+                                            <div style="font-size:13px;color:#6f6258;margin-bottom:6px;">Size: {{ item.size }}</div>
+                                        {% endif %}
+                                        {% set desc = '' %}
+                                        {% if item.product is defined and item.product is not empty %}
+                                            {% if attribute(item.product, 'description') %}
+                                                {% set desc = attribute(item.product, 'description') %}
+                                            {% endif %}
+                                        {% else %}
+                                            {% if item.description is defined and item.description %}
+                                                {% set desc = item.description %}
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if desc %}
+                                            <div style="font-size:13px;color:#6f6258;">{{ desc }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align:right;padding:10px 6px;border-top:1px solid #fff;">
+                                        {% if item.product is defined and item.product is not empty %}
+                                            {% set price = attribute(item.product, 'price') is defined ? attribute(item.product, 'price') : (attribute(item.product, 'getPrice') is defined ? attribute(item.product, 'getPrice') : null) %}
+                                        {% else %}
+                                            {% set price = item.price %}
+                                        {% endif %}
+                                        ₱{{ price|number_format(2, '.', ',') }}
+                                    </td>
+                                    <td style="text-align:center;padding:10px 6px;border-top:1px solid #fff;">{{ item.quantity }}</td>
+                                    <td style="text-align:right;padding:10px 6px;border-top:1px solid #fff;">₱{{ item.subtotal|number_format(2, '.', ',') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #eee;display:flex;justify-content:flex-end;gap:18px;flex-direction:column;align-items:flex-end;">
+                        <div style="width:320px;display:flex;justify-content:space-between;color:#6f6258;font-size:14px;"> <span>Shipping</span> <strong>₱{{ summary.shipping|default(0)|number_format(2, '.', ',') }}</strong> </div>
+                        <div style="width:320px;display:flex;justify-content:space-between;font-size:18px;font-weight:800;color:#241a14;"> <span>Total</span> <strong>₱{{ summary.grandTotal|default(summary.total|default(0))|number_format(2, '.', ',') }}</strong> </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div style="margin:18px 0;color:#6f6258;">Order #{{ order.getId() }} — we'll email you the details shortly.</div>
+        {% endif %}
+
+        <div style="text-align:center;margin-top:20px;">
+            <a href="{{ path('app_products_index') }}" class="btn btn-primary" style="padding:12px 22px;border-radius:28px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;box-shadow:0 6px 16px rgba(207,166,240,0.18);">
+                <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+                <span>Shop Now</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

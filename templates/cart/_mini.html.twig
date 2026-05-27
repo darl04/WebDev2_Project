@@ -1,0 +1,9 @@
+{# Mini cart fragment: a button with badge and dropdown list #}
+<div class="mini-cart-container" style="position:relative;">
+    <a href="{{ path('app_cart_index') }}" class="icon-only" style="position:relative;">
+        <i class="fas fa-shopping-cart" style="font-size:18px;color:var(--primary-color);"></i>
+        {% if count and count > 0 %}
+            <span style="position:absolute; top:-6px; right:-6px; background:#ff4d4f; color:white; border-radius:12px; padding:2px 6px; font-size:12px; font-weight:700;">{{ count }}</span>
+        {% endif %}
+    </a>
+</div>

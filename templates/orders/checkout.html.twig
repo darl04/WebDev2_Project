@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block body %}
+<section class="checkout-page" style="max-width:1200px;margin:0 auto;">
+
+    <form method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token('checkout') }}">
+
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start;">
+            <div>
+
+                <div style="background:#fff;border:1px solid #e9e2dd;border-radius:12px;padding:18px;">
+                    <h3>Products Ordered</h3>
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th style="width:72px;"></th>
+                                <th style="text-align:left;">Product</th>
+                                <th style="text-align:right;">Unit Price</th>
+                                <th style="text-align:center;">Quantity</th>
+                                <th style="text-align:right;">Item Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td style="padding:8px 0;">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}" style="width:62px;height:62px;object-fit:cover;border-radius:10px;border:1px solid #efe7e2;background:#f7f4f2;" />
+                                        {% else %}
+                                            <div style="width:62px;height:62px;border-radius:10px;border:1px solid #efe7e2;background:#f7f4f2;display:flex;align-items:center;justify-content:center;color:#8f8279;font-size:11px;">No image</div>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding:8px 0;">{{ item.product.name }}</td>
+                                    <td style="text-align:right;">₱{{ item.product.getPrice()|number_format(2, '.', ',') }}</td>
+                                    <td style="text-align:center;">{{ item.quantity }}</td>
+                                    <td style="text-align:right;">₱{{ item.subtotal|number_format(2, '.', ',') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <aside style="background:#fff;border:1px solid #e9e2dd;border-radius:12px;padding:18px;">
+                <h3>Order Summary</h3>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"> <span>Items</span> <span>{{ count }}</span> </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"> <span>Sub Total</span> <span>₱{{ total|number_format(2, '.', ',') }}</span> </div>
+                <div style="display:flex;justify-content:space-between;padding:8px 0;"> <span>Shipping</span> <span>₱{{ shipping|number_format(2, '.', ',') }}</span> </div>
+                <div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:800;border-top:1px solid #eee;"> <span>Total</span> <span>₱{{ grandTotal|number_format(2, '.', ',') }}</span> </div>
+
+                <div style="margin-top:12px;">
+                    <h4>Payment Method</h4>
+                    <label><input type="radio" name="payment_method" value="cod" checked> Cash on Delivery</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:16px;width:100%;">Place Order</button>
+            </aside>
+        </div>
+    </form>
+</section>
+{% endblock %}

@@ -20,6 +20,7 @@ class StockType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Select a product',
                 'label' => 'Product',
+                'required' => true,
             ])
             ->add('quantity', null, [
                 'label' => 'Quantity',

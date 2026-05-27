@@ -2,402 +2,9 @@
 
 {% block title %}DRAMATIQUE{% endblock %}
 
-{% block page_title %}Product Management{% endblock %}
-
 {% block stylesheets %}
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.5/css/dataTables.dataTables.min.css">
     <style>
-        .shop-hero {
-            background: linear-gradient(135deg, rgba(102, 45, 145, 0.08), rgba(139, 75, 196, 0.12));
-            border: 1px solid rgba(102, 45, 145, 0.12);
-            border-radius: 18px;
-            padding: 28px 28px 24px;
-            margin-bottom: 24px;
-        }
-
-        .shop-hero h2 {
-            font-size: 30px;
-            margin-bottom: 8px;
-            color: var(--text-dark);
-        }
-
-        .shop-hero p {
-            color: var(--text-light);
-            max-width: 760px;
-            line-height: 1.65;
-        }
-            .shop-card-collection {
-                display: inline-flex;
-                align-self: flex-start;
-                padding: 6px 12px;
-                border-radius: 999px;
-                background: rgba(102, 45, 145, 0.1);
-                color: var(--primary-color);
-                font-size: 12px;
-                font-weight: 700;
-                letter-spacing: 0.03em;
-                text-transform: uppercase;
-            }
-
-            
-        .shop-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 24px;
-        }
-
-        .shop-card {
-            background: var(--bg-white);
-            border: 1px solid rgba(224, 224, 224, 0.85);
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.22s ease, box-shadow 0.22s ease;
-        }
-
-        .shop-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 36px rgba(102, 45, 145, 0.12);
-        }
-
-        .shop-card-image {
-            aspect-ratio: 1 / 1;
-            background: linear-gradient(180deg, #f8f5fc 0%, #ffffff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-        }
-
-        .shop-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 14px;
-        }
-
-        .shop-card-placeholder {
-            width: 100%;
-            height: 100%;
-            min-height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            border: 2px dashed rgba(102, 45, 145, 0.2);
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.7);
-            font-weight: 600;
-        }
-
-        .shop-card-body {
-            padding: 18px 18px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            flex: 1;
-        }
-
-        .shop-card-title {
-            font-size: 18px;
-            line-height: 1.25;
-            color: var(--text-dark);
-        }
-
-        .shop-card-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .shop-card-description {
-            color: var(--text-light);
-            line-height: 1.6;
-            font-size: 14px;
-            flex: 1;
-        }
-
-        .shop-card-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-
-        .btn-shop,
-        .btn-order {
-            flex: 1 1 140px;
-            min-height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 10px 16px;
-            transition: all 0.22s ease;
-        }
-
-        .btn-shop {
-            background: white;
-            color: var(--text-dark);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-shop:hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-order {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            color: white;
-            box-shadow: 0 6px 16px rgba(102, 45, 145, 0.24);
-        }
-
-        .btn-order:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 22px rgba(102, 45, 145, 0.3);
-        }
-
-        /* ================================
-           Hide Default DataTables Elements
-           ================================ */
-        #productsTable_wrapper .dataTables_length,
-        #productsTable_wrapper .dataTables_filter,
-        #productsTable_wrapper .dataTables_info,
-        #productsTable_wrapper .dataTables_paginate {
-            display: none !important;
-        }
-
-        /* ================================
-           Custom Controls Container
-           ================================ */
-        .custom-table-controls-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 20px;
-        }
-
-        .custom-table-controls-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 24px;
-            gap: 20px;
-        }
-
-        /* ================================
-           Entries Control Styling
-           ================================ */
-        .entries-control {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .entries-control label {
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .entries-control select {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px 44px 12px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            background-color: white;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            appearance: none;
-            transition: all 0.3s ease;
-            outline: none;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-        }
-
-        .entries-control select:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 8px rgba(102, 45, 145, 0.15);
-        }
-
-        .entries-control select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(102, 45, 145, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        /* ================================
-           Search Control Styling
-           ================================ */
-        .search-control {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .search-control label {
-            font-weight: 600;
-            color: var(--text-dark);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .search-control input {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px 18px 12px 42px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            outline: none;
-            min-width: 320px;
-            background: white;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 14px center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-        }
-
-        .search-control input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 4px rgba(102, 45, 145, 0.1), 0 4px 8px rgba(0, 0, 0, 0.08);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23662d91' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
-        }
-
-        .search-control input::placeholder {
-            color: #999;
-            font-weight: 400;
-        }
-
-        /* ================================
-           Info Control Styling
-           ================================ */
-        .info-control {
-            color: var(--text-light);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        /* ================================
-           Pagination Control Styling
-           ================================ */
-        .pagination-control {
-            display: flex;
-            gap: 8px;
-        }
-
-        .pagination-control button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 44px;
-            height: 44px;
-            padding: 10px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            background: white;
-            color: var(--text-dark);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pagination-control button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(102, 45, 145, 0.1);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .pagination-control button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .pagination-control button:hover:not(:disabled) {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(102, 45, 145, 0.3);
-        }
-
-        .pagination-control button.active {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-            color: white;
-            border-color: var(--primary-color);
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(102, 45, 145, 0.4);
-            transform: scale(1.05);
-        }
-
-        .pagination-control button.active:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 8px 16px rgba(102, 45, 145, 0.4);
-        }
-
-        .pagination-control button:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-            background: #f8f8f8;
-            color: #ccc;
-            border-color: #e5e5e5;
-        }
-
-        .pagination-control button:disabled:hover {
-            transform: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-            background: #f8f8f8;
-            border-color: #e5e5e5;
-        }
-
-        /* ================================
-           Table Container (White Box)
-           ================================ */
-        .table-container {
-            background: var(--bg-white);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            overflow: hidden;
-            border: 1px solid rgba(224, 224, 224, 0.6);
-        }
-
-        .table-wrapper-inner {
-            overflow-x: auto;
-        }
-
-        /* ================================
-           Table Styling
-           ================================ */
-        #productsTable {
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 0 !important;
-            width: 100%;
-        }
-
-        #productsTable thead th {
-            background: linear-gradient(to bottom, #fafafa 0%, #f5f5f5 100%);
-            font-weight: 700;
-            text-transform: uppercase;
             font-size: 12px;
             letter-spacing: 0.8px;
             padding: 18px 20px;
@@ -522,32 +129,30 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
+                /* card visual: colored top, image overlaps into white body */
+                .shop-card { position: relative; background: var(--bg-white); border-radius: 12px; overflow: visible; box-shadow: 0 12px 30px rgba(19,19,19,0.06); display: flex; flex-direction: column; }
 
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
+                .shop-card-top { position: relative; border-top-left-radius: 12px; border-top-right-radius: 12px; overflow: hidden; }
+                .shop-card-image { height: 200px; background: linear-gradient(135deg, rgba(102,45,145,0.12), rgba(139,75,196,0.08)); display:flex; align-items:center; justify-content:center; }
+                .shop-card-image img { max-width: 88%; max-height: 170px; object-fit: contain; border-radius: 8px; transform: translateY(8px); transition: transform 0.35s ease; }
+                .shop-card:hover .shop-card-image img { transform: translateY(6px) scale(1.02); }
 
-        .btn-primary:hover::before {
-            width: 300px;
-            height: 300px;
-        }
+                .shop-card-badge { position: absolute; left: 14px; top: 12px; background: rgba(255,255,255,0.14); color: #fff; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; backdrop-filter: blur(4px); }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
+                .shop-card-body { padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; text-align: left; }
+                .shop-card-meta { font-size:12px; color:var(--text-light); }
+                .shop-card-title { font-size: 18px; color:var(--text-dark); margin-top:6px; font-weight:800; }
+                .shop-card-subtitle { color:var(--text-light); font-size:13px; }
+                .shop-card-desc { color:var(--text-light); font-size:13px; margin:6px 0 0 0; }
+
+                .shop-card-footer { display:flex; width:100%; justify-content:space-between; align-items:center; gap:12px; margin-top:12px; }
+                .shop-price-pill { background: #fff; border-radius: 18px; padding:8px 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); font-weight:700; color:var(--text-dark); }
+                .btn-order { background: #111; color: #fff; padding:10px 18px; border-radius:24px; text-decoration:none; display:inline-flex; align-items:center; gap:10px; box-shadow: 0 10px 26px rgba(0,0,0,0.12); }
+
+                .shop-pagination { margin-top: 28px; display:flex; justify-content:center; }
+                .shop-pagination ul { list-style:none; display:flex; gap:8px; padding:0; margin:0; }
+                .shop-pagination a { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; border-radius:8px; text-decoration:none; color:var(--text-dark); border:1px solid var(--border-color); padding:0 10px; }
+                .shop-pagination li.active a { background:var(--primary-color); color:white; border-color:var(--primary-color); }
             box-shadow: 0 8px 20px rgba(102, 45, 145, 0.4);
         }
 
@@ -731,37 +336,90 @@
     {% else %}
         <div class="shop-hero">
             <h2>Shop the catalog</h2>
-            <p>Browse the available products below, open a product for details, or go straight to ordering. This view is built for customers who want to shop visually instead of scanning a management table.</p>
+            <form method="get" class="shop-controls" style="margin-top:12px; display:flex; gap:12px; align-items:center;">
+                <input type="hidden" name="category" value="{{ selectedCategory|default('') }}">
+                <label for="sortSelect" style="font-weight:600; color:var(--text-light); font-size:13px;">Sort by</label>
+                <select id="sortSelect" name="sort" onchange="this.form.submit()" style="padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
+                    <option value="default" {{ sort == 'default' ? 'selected' : '' }}>Default</option>
+                    <option value="price_desc" {{ sort == 'price_desc' ? 'selected' : '' }}>Price: High &uarr;</option>
+                    <option value="price_asc" {{ sort == 'price_asc' ? 'selected' : '' }}>Price: Low &darr;</option>
+                </select>
+            </form>
         </div>
 
-        <div class="shop-grid">
-            {% for product in products %}
-                <article class="shop-card">
-                    <div class="shop-card-image">
-                        {% if product.image %}
-                            <img src="{{ product.image }}" alt="{{ product.name }}">
-                        {% else %}
-                            <div class="shop-card-placeholder">No image available</div>
-                        {% endif %}
-                    </div>
-                    <div class="shop-card-body">
-                        <h3 class="shop-card-title">{{ product.name }}</h3>
-                        <div class="shop-card-price">₱{{ product.price|number_format(2, '.', ',') }}</div>
-                        <div class="shop-card-description">
-                            {{ product.description ?: 'Ready to order.' }}
-                        </div>
-                        <div class="shop-card-actions">
-                            <a href="{{ path('app_products_show', {'id': product.id}) }}" class="btn-shop">
-                                <i class="fas fa-eye"></i> View
-                            </a>
-                            <a href="{{ path('app_orders_new', {'product': product.id}) }}" class="btn-order">
-                                <i class="fas fa-cart-shopping"></i> Order Now
-                            </a>
-                        </div>
-                    </div>
-                </article>
-            {% endfor %}
+        <div class="shop-container">
+            <div class="shop-grid">
+                {% for product in products %}
+                    
+                            <div class="shop-card-top">
+                                {% if product.image %}
+                                    <div class="shop-card-image">
+                                        <img src="{{ product.image }}" alt="{{ product.name }}">
+                                    </div>
+                                {% else %}
+                                    <div class="shop-card-image shop-card-placeholder">No image</div>
+                                {% endif %}
+
+                                {# small top badges: bestseller / brand #}
+                                <div class="shop-card-badge">Best Seller</div>
+                            </div>
+
+                            <div class="shop-card-body">
+                                <div class="shop-card-meta">{{ product.collectionType ?: '' }}</div>
+                                <h3 class="shop-card-title">{{ product.name }}</h3>
+                                <div class="shop-card-subtitle">{{ product.description ? (product.description|raw)|striptags|slice(0,60) : '' }}</div>
+                                <p class="shop-card-desc">{{ product.description ?: '' }}</p>
+
+                                <div class="shop-card-footer">
+                                    <div class="shop-price-pill">₱{{ product.price|number_format(2, '.', ',') }}</div>
+                                    <a href="{{ path('app_cart_add', {'id': product.id}) }}" class="btn-order js-add-to-cart" data-add-url="{{ path('app_cart_add', {'id': product.id}) }}" data-product-id="{{ product.id }}">
+                                        Buy Now <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                {% endfor %}
+            </div>
         </div>
+        <style>
+            /* container and grid */
+            .shop-container { max-width: 1100px; margin: 0 auto; padding: 18px 16px 48px; }
+            .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; }
+
+            /* card visual */
+            .shop-card { position: relative; background: var(--bg-white); border-radius: 14px; overflow: hidden; box-shadow: 0 8px 28px rgba(19,19,19,0.06); display: flex; flex-direction: column; }
+            /* image container shows the whole image with padding and background, not cropped */
+            .shop-card-image { background: linear-gradient(180deg,#fbfbfb,#fff); padding: 18px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(224,224,224,0.6); }
+            .shop-card-image img { max-width: 100%; max-height: 180px; width: auto; height: auto; object-fit: contain; display: block; transition: transform 0.35s ease; }
+            .shop-card:hover .shop-card-image img { transform: scale(1.02); }
+
+            .shop-card-badge { position: absolute; left: 16px; top: 12px; background: linear-gradient(135deg,var(--primary-color),var(--primary-light)); color: #fff; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; box-shadow: 0 6px 16px rgba(102,45,145,0.18); }
+
+            .shop-card-body { padding: 14px 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+            .shop-card-meta { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:12px; color:var(--text-light); }
+            .shop-card-title { font-size: 15px; color:var(--text-dark); margin-top:4px; }
+            .shop-card-description { color:var(--text-light); font-size:13px; min-height:36px; }
+
+            .shop-card-price-row { display:flex; gap:8px; align-items:baseline; }
+            .shop-card-price { font-size: 18px; font-weight:700; color:var(--primary-color); }
+            .shop-card-price-old { color:#999; text-decoration:line-through; font-size:13px; }
+
+            .shop-card-actions { display:flex; gap:10px; margin-top:8px; }
+            .btn-shop, .btn-order { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; text-decoration:none; font-weight:600; }
+            .btn-shop { background: #fff; border:1px solid var(--border-color); color:var(--text-dark); }
+            .btn-order { background: linear-gradient(135deg,var(--primary-color),var(--primary-light)); color:#fff; box-shadow:0 8px 20px rgba(102,45,145,0.18); }
+
+            .shop-pagination { margin-top: 28px; display:flex; justify-content:center; }
+            .shop-pagination ul { list-style:none; display:flex; gap:8px; padding:0; margin:0; }
+            .shop-pagination a { display:inline-flex; align-items:center; justify-content:center; min-width:36px; height:36px; border-radius:8px; text-decoration:none; color:var(--text-dark); border:1px solid var(--border-color); padding:0 10px; }
+            .shop-pagination li.active a { background:var(--primary-color); color:white; border-color:var(--primary-color); }
+
+            @media (max-width: 800px) {
+                .shop-container { padding: 12px; }
+                .shop-card-image { padding: 14px; }
+                .shop-card-image img { max-height: 140px; }
+            }
+        </style>
     {% endif %}
 {% endblock %}
 
@@ -829,4 +487,86 @@
             });
         </script>
     {% endif %}
+    <script>
+        // Add-to-cart with fly-to-cart animation
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest && e.target.closest('.js-add-to-cart');
+            if (!btn) return;
+            e.preventDefault();
+
+            const url = btn.dataset.addUrl || btn.getAttribute('href');
+            const card = btn.closest('.shop-card');
+            const img = card ? card.querySelector('img') : null;
+            const mini = document.querySelector('.mini-cart-container a');
+
+            // create a flying clone
+            let clone;
+            if (img) {
+                clone = img.cloneNode(true);
+                clone.style.position = 'fixed';
+                const r = img.getBoundingClientRect();
+                clone.style.left = r.left + 'px';
+                clone.style.top = r.top + 'px';
+                clone.style.width = r.width + 'px';
+                clone.style.height = r.height + 'px';
+                clone.style.zIndex = 2000;
+                clone.style.transition = 'transform 0.8s cubic-bezier(.2,.8,.2,1), left 0.8s, top 0.8s, width 0.8s, height 0.8s, opacity 0.6s';
+                document.body.appendChild(clone);
+            }
+
+            // send AJAX request
+            fetch(url, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => {
+                    // update mini-cart badge
+                    const container = document.querySelector('.mini-cart-container');
+                    if (container) {
+                        let badge = container.querySelector('span');
+                        if (!badge) {
+                            badge = document.createElement('span');
+                            badge.style.position = 'absolute';
+                            badge.style.top = '-6px';
+                            badge.style.right = '-6px';
+                            badge.style.background = '#ff4d4f';
+                            badge.style.color = 'white';
+                            badge.style.borderRadius = '12px';
+                            badge.style.padding = '2px 6px';
+                            badge.style.fontSize = '12px';
+                            badge.style.fontWeight = '700';
+                            container.querySelector('a').appendChild(badge);
+                        }
+                        badge.textContent = data.count || 0;
+                    }
+
+                    // animate clone to mini cart
+                    if (clone && mini) {
+                        const targetRect = mini.getBoundingClientRect();
+                        const endX = targetRect.left + targetRect.width/2 - (clone.width || clone.offsetWidth)/2;
+                        const endY = targetRect.top + targetRect.height/2 - (clone.height || clone.offsetHeight)/2;
+                        requestAnimationFrame(() => {
+                            clone.style.transform = `translate(${endX - parseFloat(clone.style.left)}px, ${endY - parseFloat(clone.style.top)}px) scale(0.2)`;
+                            clone.style.opacity = '0.6';
+                        });
+                        setTimeout(() => clone.remove(), 900);
+                    }
+
+                    // tiny toast
+                    const toast = document.createElement('div');
+                    toast.textContent = data.message || 'Added to cart';
+                    toast.style.position = 'fixed';
+                    toast.style.right = '18px';
+                    toast.style.bottom = '18px';
+                    toast.style.background = 'rgba(0,0,0,0.8)';
+                    toast.style.color = '#fff';
+                    toast.style.padding = '10px 14px';
+                    toast.style.borderRadius = '8px';
+                    toast.style.zIndex = 3000;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 1400);
+                })
+                .catch(err => {
+                    console.error('Add to cart failed', err);
+                });
+        });
+    </script>
 {% endblock %}

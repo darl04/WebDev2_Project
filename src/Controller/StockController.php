@@ -29,11 +29,22 @@ final class StockController extends AbstractController
     #[Route('/new', name: 'app_stock_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
+            throw $this->createAccessDeniedException('You do not have permission to create stock.');
+        }
         $stock = new Stock();
         $form = $this->createForm(StockType::class, $stock);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Defensive: ensure a product was selected (DB requires product non-null)
+            if (!$stock->getProduct()) {
+                $this->addFlash('error', 'Please select a product for this stock entry.');
+                return $this->render('stock/new.html.twig', [
+                    'stock' => $stock,
+                    'form' => $form,
+                ]);
+            }
             // set owner
             $stock->setCreatedBy($this->getUser());
             
@@ -93,6 +104,19 @@ final class StockController extends AbstractController
                 if (!$isAdmin && !($isStaff && ($isOwner || $createdByAdmin)) && !$isOwner) {
                     throw $this->createAccessDeniedException('You do not have permission to edit this stock.');
                 }
+            }
+
+            // Defensive: ensure a product is present when editing
+            if (!$stock->getProduct()) {
+                $this->addFlash('error', 'Stock must be associated with a product.');
+                return $this->render('stock/edit.html.twig', [
+                    'stock' => $stock,
+                    'form' => $form,
+                    'stockAdjustments' => $stockAdjustmentRepository->findBy(
+                        ['stock' => $stock],
+                        ['createdAt' => 'DESC', 'id' => 'DESC']
+                    ),
+                ]);
             }
 
             $newQuantity = $stock->getQuantity() ?? 0;

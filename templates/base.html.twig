@@ -227,6 +227,55 @@
             background-color: var(--primary-color);
         }
 
+        /* Sidebar filter submenu */
+        .nav-submenu {
+            padding: 0 12px 12px 12px;
+            border-top: 1px solid rgba(224,224,224,0.6);
+            background: transparent;
+        }
+
+        .nav-submenu summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .nav-submenu[open] summary .fas { transform: rotate(180deg); }
+
+        .nav-submenu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0 8px 0;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .nav-category-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+
+        .nav-sublink {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            padding: 8px 10px;
+            border-radius: 8px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .nav-sublink:hover { background: rgba(102,45,145,0.04); color: var(--primary-color); }
+
+        .nav-sublink.active { color: var(--primary-color); font-weight: 700; background: rgba(102,45,145,0.06); }
+
+        .nav-sublink-count { color: var(--text-light); font-size: 12px; margin-left: 8px; }
+
         .nav-icon {
             margin-right: 12px;
             font-size: 16px;
@@ -652,6 +701,9 @@
         @media (max-width: 800px) {
             .table { min-width: 540px; }
             .table thead th, .table tbody td { padding: 10px 12px; }
+            /* mobile: collapse sidebar for better shop layout */
+            .sidebar { position: fixed; left: 0; top: 0; transform: translateX(0); z-index: 1200; }
+            .main-content { margin-left: 0; }
         }
 
         {% block stylesheets %}{% endblock %}
@@ -671,10 +723,34 @@
             <nav class="sidebar-nav">
                 <ul>
                     <li class="nav-item">
-                        <a href="{{ path('app_dashboard') }}" class="nav-link {{ app.request.get('_route') == 'app_dashboard' ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-chart-line"></i>
-                            <span>Dashboard</span>
+                        <a href="{{ path('app_products_index') }}" class="nav-link {{ app.request.get('_route') starts with 'app_products' ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-store"></i>
+                            <span>Shop</span>
                         </a>
+                        {% if not (is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF')) %}
+                            <details class="nav-submenu" {% if app.request.get('_route') starts with 'app_products' %}open{% endif %}>
+                                <summary class="nav-filter-toggle">
+                                    <span>Filter Options</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </summary>
+                                <div class="nav-submenu-header">
+                                    <span>Category</span>
+                                    <a href="{{ path('app_products_index') }}" class="nav-sublink" style="padding:0; font-size:12px;">Reset</a>
+                                </div>
+                                <ul class="nav-category-list">
+                                    {% for categoryName, categoryCount in categories|default({}) %}
+                                        <li>
+                                            <a href="{{ path('app_products_index', {'category': categoryName}) }}" class="nav-sublink {{ selectedCategory|default('') == categoryName ? 'active' : '' }}">
+                                                {{ categoryName }}
+                                                <span class="nav-sublink-count">{{ categoryCount }}</span>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li><span class="nav-sublink">No categories</span></li>
+                                    {% endfor %}
+                                </ul>
+                            </details>
+                        {% endif %}
                     </li>
 
                     {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF') %}
@@ -732,8 +808,9 @@
         <!-- Main Content -->
         <main class="main-content">
             <div class="topbar">
-                <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="topbar-title">{% block page_title %}{% endblock %}</div>
                 <div class="topbar-user">
+                    {{ render(controller('App\\Controller\\CartController::mini')) }}
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="profile-dropdown-trigger">
                             <div class="user-avatar-container">
