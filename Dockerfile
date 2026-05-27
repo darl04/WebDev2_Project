@@ -36,19 +36,21 @@ COPY . .
 # # Install frontend dependencies and build assets
 # RUN npm install && npm run build
 
-# Create a default .env file if one does not already exist.
-RUN if [ ! -f /app/.env ]; then \
-    DB_URL=${DATABASE_URL:-${MYSQL_URL:-mysql://root@127.0.0.1:3306/app_db?serverVersion=8.0}}; \
-    echo "APP_ENV=${APP_ENV:-prod}\nAPP_DEBUG=${APP_DEBUG:-false}\nAPP_SECRET=${APP_SECRET:-ChangeMe}\nDEFAULT_URI=${DEFAULT_URI:-http://localhost}\nDATABASE_URL=$DB_URL\nMAILER_DSN=${MAILER_DSN:-null://null}\nMESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}\n" > /app/.env; \
-    fi
+# Do not create a `.env` file at build time — runtime environment
+# variables must be used by the container. Creating `.env` during
+# image build bakes configuration (like `DATABASE_URL`) into the
+# cached Symfony config which can cause connection issues in hosts
+# like Railway where credentials are provided at runtime.
 
 # Reinstall dependencies and optimize the autoloader for production.
 # We include redis-messenger here and ignore platform reqs to ensure it installs even if the extension check is finicky in the container.
 RUN composer require symfony/redis-messenger --no-interaction --ignore-platform-reqs && \
     composer install --no-interaction --optimize-autoloader --no-ansi || true
 
-# Warm the Symfony cache in production mode for faster startup.
-RUN php bin/console cache:warmup --env=prod --no-debug || true
+# Do not warm Symfony cache at build time. Cache must be warmed at
+# container start using runtime environment variables so that
+# resolved configuration (like `DATABASE_URL`) uses the correct
+# credentials provided by Railway at runtime.
 
 
 FROM php:8.3-fpm AS runtime

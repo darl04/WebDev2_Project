@@ -7,9 +7,17 @@ if [ -z "$DATABASE_URL" ] && [ -n "$MYSQL_URL" ]; then
     echo "Exported DATABASE_URL from MYSQL_URL"
 fi
 
+# Set a default `DEFAULT_URI` when not provided by the environment.
 if [ -z "$DEFAULT_URI" ]; then
     export DEFAULT_URI="http://localhost"
 fi
+
+# Ensure Symfony cache is (re)built using the runtime environment
+# variables that Railway provides. Warming at runtime prevents the
+# image from containing baked-in DB credentials from build time.
+echo "Clearing and warming Symfony cache with runtime env vars..."
+php bin/console cache:clear --env=prod --no-debug || true
+php bin/console cache:warmup --env=prod --no-debug || true
 
 echo "Starting PHP-FPM..."
 php-fpm -F &
