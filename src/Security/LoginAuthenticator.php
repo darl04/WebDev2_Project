@@ -41,19 +41,15 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $isPrivilegedUser = in_array('ROLE_ADMIN', $token->getRoleNames(), true)
-            || in_array('ROLE_STAFF', $token->getRoleNames(), true);
-
-        // Always land regular users on the shop page after sign in.
-        if (!$isPrivilegedUser) {
-            return new RedirectResponse($this->urlGenerator->generate('app_products_index'));
-        }
-
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        if (in_array('ROLE_ADMIN', $token->getRoleNames(), true) || in_array('ROLE_STAFF', $token->getRoleNames(), true)) {
+            return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        }
+
+        return new RedirectResponse($this->urlGenerator->generate('app_products_index'));
     }
 
     protected function getLoginUrl(Request $request): string

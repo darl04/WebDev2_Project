@@ -8,7 +8,6 @@
     <div class="table-container">
     <table class="table">
         <tbody>
-            {% set isRentalOnly = product.collectionType is defined and product.collectionType and product.collectionType|lower == 'mascots' %}
             <tr>
                 <th>Image</th>
                 <td>
@@ -32,31 +31,9 @@
                 <td>{{ product.description }}</td>
             </tr>
             <tr>
-                <th>Size</th>
-                <td>
-                    {% if isRentalOnly %}
-                        <div style="padding:12px 14px;border:1px solid #eddccf;border-radius:8px;background:#fff8f1;color:#7b5a37;">
-                            Mascot items are available for rental only.
-                        </div>
-                    {% elseif product.collectionType is defined and product.collectionType and product.collectionType|lower matches '/inflatable/' %}
-                        <form method="post" action="{{ path('app_cart_add', {'id': product.id}) }}" style="display:flex;gap:12px;align-items:center;">
-                            <input type="hidden" name="size" value="Standard" />
-                            <button type="submit" class="btn btn-primary" style="padding:8px 12px;border-radius:8px;">Add to cart</button>
-                        </form>
-                    {% else %}
-                        <form method="post" action="{{ path('app_cart_add', {'id': product.id}) }}" style="display:flex;gap:12px;align-items:center;">
-                            <select name="size" style="padding:8px;border:1px solid #eae7e3;border-radius:8px;">
-                                <option value="Standard">Standard</option>
-                                <option value="Small">Small</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Large">Large</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary" style="padding:8px 12px;border-radius:8px;">Add to cart</button>
-                        </form>
-                    {% endif %}
-                </td>
+                <th>Collection</th>
+                <td>{{ product.collectionType ?: 'Uncategorized' }}</td>
             </tr>
-            {# Collection removed from product details as requested #}
         </tbody>
     </table>
     </div>

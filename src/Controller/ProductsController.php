@@ -19,41 +19,10 @@ use App\Entity\User;
 final class ProductsController extends AbstractController
 {
     #[Route(name: 'app_products_index', methods: ['GET'])]
-    public function index(Request $request, ProductsRepository $productsRepository, ActivityLogRepository $activityLogRepository): Response
+    public function index(ProductsRepository $productsRepository, ActivityLogRepository $activityLogRepository): Response
     {
-        $selectedCategory = trim((string) $request->query->get('category', ''));
-
-        // Determine sort order from query param
-        $sort = (string) $request->query->get('sort', 'default');
-        $orderBy = ['collectionType' => 'ASC', 'name' => 'ASC'];
-        if ($sort === 'price_asc') {
-            $orderBy = ['price' => 'ASC'];
-        } elseif ($sort === 'price_desc') {
-            $orderBy = ['price' => 'DESC'];
-        }
-
-        $allProducts = $productsRepository->findBy([], $orderBy);
-        $allProducts = array_values(array_filter($allProducts, static function (Products $product): bool {
-            return strtolower((string) $product->getCollectionType()) !== 'mascots';
-        }));
-
-        $products = $selectedCategory !== ''
-            ? array_values(array_filter($allProducts, static function (Products $product) use ($selectedCategory): bool {
-                return $product->getCollectionType() === $selectedCategory;
-            }))
-            : $allProducts;
-
-        $categoryCounts = [];
-        foreach ($allProducts as $product) {
-            $categoryName = $product->getCollectionType() ?: 'General';
-            $categoryCounts[$categoryName] = ($categoryCounts[$categoryName] ?? 0) + 1;
-        }
-
         return $this->render('products/index.html.twig', [
-            'products' => $products,
-            'categories' => $categoryCounts,
-            'selectedCategory' => $selectedCategory,
-            'sort' => $sort,
+            'products' => $productsRepository->findBy([], ['collectionType' => 'ASC', 'name' => 'ASC']),
             'productAdditionHistory' => $activityLogRepository->findProductAdditionHistory(),
         ]);
     }
@@ -61,9 +30,6 @@ final class ProductsController extends AbstractController
     #[Route('/new', name: 'app_products_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_STAFF')) {
-            throw $this->createAccessDeniedException('You do not have permission to create products.');
-        }
         $product = new Products();
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
