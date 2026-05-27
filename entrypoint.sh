@@ -16,6 +16,17 @@ fi
 # variables that Railway provides. Warming at runtime prevents the
 # image from containing baked-in DB credentials from build time.
 echo "Clearing and warming Symfony cache with runtime env vars..."
+# If a `.env` file was copied into the image from the repo, it can
+# override runtime env vars. Remove it so environment variables set
+# by the platform (Railway) are used instead.
+if [ -f /app/.env ]; then
+    echo "Removing baked-in .env to prefer runtime env vars"
+    rm -f /app/.env
+fi
+if [ -f /app/.env.local.php ]; then
+    echo "Removing baked-in .env.local.php to prefer runtime env vars"
+    rm -f /app/.env.local.php
+fi
 php bin/console cache:clear --env=prod --no-debug || true
 php bin/console cache:warmup --env=prod --no-debug || true
 
