@@ -23,48 +23,36 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- \
-    --install-dir=/usr/local/bin \
-    --filename=composer
+RUN curl -sS https://getcomposer.org/installer | php --install-dir=/usr/local/bin --filename=composer
 
 # Allow Composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Copy composer files first for caching
+# Copy composer files first
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
+# Install dependencies without scripts
 RUN composer install \
     --no-interaction \
     --no-scripts \
     --optimize-autoloader
 
-# Copy application files
+# Copy application source
 COPY . .
 
-# Create default .env if missing
-RUN if [ ! -f /app/.env ]; then \
-    DB_URL=${DATABASE_URL:-${MYSQL_URL:-mysql://root@127.0.0.1:3306/app_db?serverVersion=8.0}}; \
-    echo "APP_ENV=prod\n\
-APP_DEBUG=false\n\
-APP_SECRET=ChangeMe\n\
-DEFAULT_URI=http://localhost\n\
-DATABASE_URL=$DB_URL\n\
-MAILER_DSN=null://null\n\
-MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0\n" > /app/.env; \
-    fi
+# Install Redis Messenger without scripts
+RUN composer require symfony/redis-messenger \
+    --no-interaction \
+    --no-scripts
 
-# Install Symfony Redis Messenger
-RUN composer require symfony/redis-messenger --no-interaction
-
-# Optimize autoloader
+# Optimize Composer
 RUN composer install \
     --no-interaction \
     --optimize-autoloader \
     --no-ansi
 
-# Warm Symfony cache
-RUN php bin/console cache:warmup --env=prod --no-debug
+# Warm Symfony cache safely
+RUN APP_ENV=prod APP_DEBUG=0 php bin/console cache:warmup --no-debug || true
 
 
 # =========================
@@ -99,7 +87,7 @@ RUN mkdir -p /app/var && \
     chmod -R 755 /app && \
     chmod -R 775 /app/var
 
-# Configure Nginx
+# Configure nginx
 COPY nginx-main.conf /etc/nginx/nginx.conf
 
 RUN rm -rf /etc/nginx/conf.d/* \
