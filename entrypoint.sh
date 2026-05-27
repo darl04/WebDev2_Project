@@ -41,6 +41,13 @@ if [ -z "$DEFAULT_URI" ]; then
     export DEFAULT_URI="http://localhost"
 fi
 
+# Defaults for vars normally in .env (container ships with an empty .env file).
+export CORS_ALLOW_ORIGIN="${CORS_ALLOW_ORIGIN:-^https?://.*}"
+export MESSENGER_TRANSPORT_DSN="${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}"
+export MAILER_DSN="${MAILER_DSN:-null://null}"
+export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID:-unused}"
+export GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET:-unused}"
+
 # Ensure Symfony cache is (re)built using the runtime environment
 # variables that Railway provides. Warming at runtime prevents the
 # image from containing baked-in DB credentials from build time.
@@ -62,8 +69,12 @@ else
     echo "JWT keys already present; skipping key generation."
 fi
 
+# Console runs as root; PHP-FPM runs as www-data and must read/write var/ and JWT keys.
+chown -R www-data:www-data /app/var /app/config/jwt 2>/dev/null || true
+chmod -R 775 /app/var 2>/dev/null || true
+
 echo "Starting PHP-FPM..."
-php-fpm -F &
+php-fpm -D
 
 echo "Waiting for PHP-FPM to start..."
 sleep 2
@@ -108,5 +119,6 @@ run_migrations_when_db_ready() {
 # Run migrations in the background so Nginx can bind $PORT immediately (avoids 502 on Railway).
 run_migrations_when_db_ready &
 
-echo "Starting Nginx on port ${PORT}..."
+nginx -t
+echo "Starting Nginx on 0.0.0.0:${PORT}..."
 exec nginx -g "daemon off;"
