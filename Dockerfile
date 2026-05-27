@@ -33,6 +33,14 @@ RUN composer install --no-interaction --no-scripts --optimize-autoloader && \
 # Copy the application source after dependencies are cached.
 COPY . .
 
+# If a `.env` file exists in the repository it would be copied into the
+# image above. To avoid baking local credentials into the image, remove
+# any copied `.env` and replace it with an empty file that the Symfony
+# Runtime can read without throwing a PathException.
+RUN if [ -f /app/.env ]; then rm -f /app/.env; fi && \
+    if [ -f /app/.env.local.php ]; then rm -f /app/.env.local.php; fi && \
+    touch /app/.env && chmod 644 /app/.env
+
 # # Install frontend dependencies and build assets
 # RUN npm install && npm run build
 
