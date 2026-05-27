@@ -19,22 +19,31 @@ class UserFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
        $admin = new User();
-       $admin->setUserName('admin');
+         $admin->setUsername('admin');
+         $admin->setEmail('admin@example.com');
        $admin->setRoles(['ROLE_ADMIN']);
+         $admin->setIsVerified(true);
+         $admin->setVerificationToken('seed-admin-token');
        $hashedPassword = $this->passwordHasher->hashPassword($admin, 'admin123');
        $admin->setPassword($hashedPassword);
        $manager->persist($admin);
 
        $user = new User();
-       $user->setUserName('user');
+         $user->setUsername('user');
+         $user->setEmail('user@example.com');
        $user->setRoles(['ROLE_USER']);
+         $user->setIsVerified(true);
+         $user->setVerificationToken('seed-user-token');
        $hashedPassword = $this->passwordHasher->hashPassword($user, 'user123');
        $user->setPassword($hashedPassword);
        $manager->persist($user);
 
        $staff = new User();
-       $staff->setUserName('staff');
+         $staff->setUsername('staff');
+         $staff->setEmail('staff@example.com');
        $staff->setRoles(['ROLE_STAFF']);
+         $staff->setIsVerified(true);
+         $staff->setVerificationToken('seed-staff-token');
        $hashedPassword = $this->passwordHasher->hashPassword($staff, 'staff123');
        $staff->setPassword($hashedPassword);
        $manager->persist($staff);
