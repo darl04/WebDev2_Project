@@ -92,11 +92,11 @@ else
     echo "Skipping migrations because the database is unavailable."
 fi
 
-if [ "$DB_READY" -eq 1 ] && php bin/console list --raw 2>/dev/null | grep -qx 'doctrine:fixtures:load'; then
+if [ "$DB_READY" -eq 1 ] && [ "${LOAD_FIXTURES:-0}" = "1" ]; then
     echo "Loading fixtures..."
     php bin/console doctrine:fixtures:load --append --no-interaction || true
 else
-    echo "Skipping fixtures because doctrine/fixtures-bundle is not available or the database is unavailable."
+    echo "Skipping fixtures. Set LOAD_FIXTURES=1 to seed users/products on startup."
 fi
 
 echo "Substituting PORT_PLACEHOLDER with ${PORT} in nginx config..."
