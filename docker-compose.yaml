@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: dramatique
-    container_name: dramatique_container
+    image: platform-b
+    container_name: platform_b_container
     ports:
       - "8000:80"
     volumes:
@@ -28,29 +28,6 @@ services:
       retries: 3
       start_period: 10s
 
-  db:
-    image: mysql:8.0
-    container_name: dramatique_db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
-      MYSQL_USER: ${MYSQL_USER:-app}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secret}
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - platform-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
 networks:
   platform-network:
     driver: bridge
-
-volumes:
-  db_data:
-    driver: local

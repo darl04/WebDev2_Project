@@ -33,32 +33,22 @@ RUN composer install --no-interaction --no-scripts --optimize-autoloader && \
 # Copy the application source after dependencies are cached.
 COPY . .
 
-# If a `.env` file exists in the repository it would be copied into the
-# image above. To avoid baking local credentials into the image, remove
-# any copied `.env` and replace it with an empty file that the Symfony
-# Runtime can read without throwing a PathException.
-RUN if [ -f /app/.env ]; then rm -f /app/.env; fi && \
-    if [ -f /app/.env.local.php ]; then rm -f /app/.env.local.php; fi && \
-    touch /app/.env && chmod 644 /app/.env
+# Install frontend dependencies and build assets
+RUN npm install && npm run build
 
-# # Install frontend dependencies and build assets
-# RUN npm install && npm run build
-
-# Do not create a `.env` file at build time — runtime environment
-# variables must be used by the container. Creating `.env` during
-# image build bakes configuration (like `DATABASE_URL`) into the
-# cached Symfony config which can cause connection issues in hosts
-# like Railway where credentials are provided at runtime.
+# Create a default .env file if one does not already exist.
+RUN if [ ! -f /app/.env ]; then \
+    DB_URL=${DATABASE_URL:-${MYSQL_URL:-mysql://root@127.0.0.1:3306/app_db?serverVersion=8.0}}; \
+    echo "APP_ENV=${APP_ENV:-prod}\nAPP_DEBUG=${APP_DEBUG:-false}\nAPP_SECRET=${APP_SECRET:-ChangeMe}\nDEFAULT_URI=${DEFAULT_URI:-http://localhost}\nDATABASE_URL=$DB_URL\nMAILER_DSN=${MAILER_DSN:-null://null}\nMESSENGER_TRANSPORT_DSN=${MESSENGER_TRANSPORT_DSN:-doctrine://default?auto_setup=0}\n" > /app/.env; \
+    fi
 
 # Reinstall dependencies and optimize the autoloader for production.
 # We include redis-messenger here and ignore platform reqs to ensure it installs even if the extension check is finicky in the container.
 RUN composer require symfony/redis-messenger --no-interaction --ignore-platform-reqs && \
     composer install --no-interaction --optimize-autoloader --no-ansi || true
 
-# Do not warm Symfony cache at build time. Cache must be warmed at
-# container start using runtime environment variables so that
-# resolved configuration (like `DATABASE_URL`) uses the correct
-# credentials provided by Railway at runtime.
+# Warm the Symfony cache in production mode for faster startup.
+RUN php bin/console cache:warmup --env=prod --no-debug || true
 
 
 FROM php:8.3-fpm AS runtime
@@ -97,8 +87,8 @@ COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Healthcheck verifies the app is serving HTTP correctly.
-HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
-    CMD sh -c 'curl -f "http://127.0.0.1:${PORT:-80}/" || exit 1'
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
 
 # Expose HTTP port 80 from the container.
 EXPOSE 80
