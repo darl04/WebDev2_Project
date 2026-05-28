@@ -52,8 +52,15 @@ class RegistrationController extends AbstractController
                 UrlGeneratorInterface::ABSOLUTE_URL
             );
 
-            // Send verification email
-            $emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+            // Send verification email, but do not block account creation if mail delivery fails.
+            try {
+                $emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+            } catch (\Throwable $exception) {
+                $this->addFlash(
+                    'warning',
+                    'Your account was created, but the verification email could not be sent right now. Please contact support if you cannot verify your account.'
+                );
+            }
 
             $this->addFlash('success', 'Registration successful! Please check your email to verify your account.');
 
