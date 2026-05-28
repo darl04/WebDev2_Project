@@ -29,11 +29,12 @@ php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migratio
 echo "Loading fixtures..."
 php bin/console doctrine:fixtures:load --append --no-interaction || true
 
-echo "Substituting PORT_PLACEHOLDER with ${PORT} in nginx config..."
+echo "Configuring Nginx to listen on port ${PORT}..."
 sed -i "s/PORT_PLACEHOLDER/${PORT}/g" /etc/nginx/conf.d/symfony.conf
 
 echo "Testing nginx configuration..."
 nginx -t
 
-echo "Starting Nginx..."
+echo "Starting Nginx on 0.0.0.0:${PORT}..."
 exec nginx -g "daemon off;"
+
