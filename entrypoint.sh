@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Default PORT to 80 if Railway does not provide one
+PORT="${PORT:-80}"
+
 # Map MYSQL_URL to DATABASE_URL if DATABASE_URL is not set (common on Railway)
 if [ -z "$DATABASE_URL" ] && [ -n "$MYSQL_URL" ]; then
     export DATABASE_URL="$MYSQL_URL"
@@ -8,8 +11,7 @@ if [ -z "$DATABASE_URL" ] && [ -n "$MYSQL_URL" ]; then
 fi
 
 echo "Starting PHP-FPM..."
-php-fpm -F &
-PHP_PID=$!
+php-fpm -D
 
 echo "Waiting for PHP-FPM to start..."
 sleep 2
@@ -27,7 +29,11 @@ php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migratio
 echo "Loading fixtures..."
 php bin/console doctrine:fixtures:load --append --no-interaction || true
 
-echo "Starting Nginx..."
-nginx -g "daemon off;"
+echo "Substituting PORT_PLACEHOLDER with ${PORT} in nginx config..."
+sed -i "s/PORT_PLACEHOLDER/${PORT}/g" /etc/nginx/conf.d/symfony.conf
 
-wait $PHP_PID
+echo "Testing nginx configuration..."
+nginx -t
+
+echo "Starting Nginx..."
+exec nginx -g "daemon off;"

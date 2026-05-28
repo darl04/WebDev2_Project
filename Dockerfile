@@ -34,7 +34,8 @@ RUN composer install --no-interaction --no-scripts --optimize-autoloader && \
 COPY . .
 
 # Install frontend dependencies and build assets
-RUN npm install && npm run build
+# Uncomment the line below once a package.json is added to the project
+# RUN npm install && npm run build
 
 # Create a default .env file if one does not already exist.
 RUN if [ ! -f /app/.env ]; then \
